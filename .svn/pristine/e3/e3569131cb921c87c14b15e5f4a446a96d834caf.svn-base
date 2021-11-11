@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+		<link rel="stylesheet" th:href="@{/css/cbmv_index.css}" />
+		<link rel="stylesheet" th:href="@{/css/register.css}" />
+		<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+		<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script>
+$(function (){
+	$("#validCode")[0].src="[[@{/AdminInfo/validCode}]]";
+})
+function showNav() {
+	$(".fixed-nav-right").toggle("slow");
+}
+function getMoreInfo(){
+	$(".fixed-nav-helps").toggle("slow");
+}
+function getSearchInfo() {
+	$(".fixed-nav-search").toggle("slow");
+}
+function refresh(){
+	let img = document.getElementById("validCode");
+	img.src = "[[@{/AdminInfo/validCode}]]?_="+new Date().getTime();
+}
+</script>
+	</head>
+
+	<body>
+		<!--顶部登录及logo模块 begin-->
+		<div class="cbmv-header">
+			<!--登录、注册 begin-->
+			<div class="flex-container">
+				<div class="cbmv-header-left">
+					<span class="glyphicon glyphicon-th-list more-icon"></span>
+					<a href="javascript:void(0)" onclick="getMoreInfo()">更多</a>
+					<span class="glyphicon glyphicon-search search-icon"></span>
+					<a href="javascript:void(0)" onclick="getSearchInfo()">搜索</a>
+				</div>
+				<div class="cbmv-header-right">
+					<a href="cbmv-login.html">登录</a>
+					<a href="register.html">注册</a>
+				</div>
+			</div>
+			<!--登录、注册 end-->
+			<!--logo 下拉菜单 begin-->
+			<div>
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" onclick="showNav()">
+						            <span class="sr-only">切换导航</span>
+						            <span class="icon-bar"></span>
+						            <span class="icon-bar"></span>
+						            <span class="icon-bar"></span>
+       							 </button>
+							<img th:src="@{/img/logo.png}" />
+						</div>
+						<div class="fixed-nav-right">
+							<ul>
+								<li><a th:href="@{/cbmv-index}">首页</a></li>
+								<li><a th:href="@{/cbmv-index}">微讲堂</a></li>
+							</ul>
+						</div>
+						<div class="fixed-nav-helps">
+								<ul>
+									<li><a href="#">咨询热线：0738-88667333</a></li>
+									<li><a href="#">创蓝官网</a></li>
+									<li><a href="#">站内帮助</a></li>
+									<li><a href="#">联系我们</a></li>
+								</ul>
+						</div>
+						<div class="fixed-nav-search">
+								<input type="text" placeholder="请输入要搜索的内容" class="input-sm"/>
+								<button class="btn btn-primary btn-sm">搜索</button>
+						</div>
+					</div>
+				</nav>
+			</div>
+			<!--logo 下拉菜单 end-->
+		</div>
+		<!--顶部登录及logo模块 end-->
+
+		<!--注册 begin-->
+		<div class="register container">
+			<form class="form-horizontal">
+				<div class="register-title"><h3>欢迎来到创蓝IT教育~登录</h3></div>
+				<div class="form-group">
+					<label for="inputPhone" class="col-xs-3 control-label">手机号</label>
+					<div class="col-xs-9">
+						<input type="text" class="form-control" id="inputPhone" placeholder="请输入手机号">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="inputPassword" class="col-xs-3 control-label">密码</label>
+					<div class="col-xs-9">
+						<input type="password" class="form-control" id="inputPassword" placeholder="请输入密码">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="inputCode" class="col-xs-3 control-label">验证码</label>
+					<div class="col-xs-9">
+						<input type="text" class="form-control" id="inputCode" placeholder="请输入下方的验证码">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="inputCode" class="col-xs-3 control-label"></label>
+					<div class="col-xs-9">
+						<img id="validCode" src="" alt="验证码" title="验证码" style="width: 115px;height: 40px;">
+				  		<a href="javascript:refresh();">看不清？点我刷新</a>
+					</div>
+				</div>
+<!-- 				<div class="form-group">
+				    <div class="col-xs-offset-3 col-xs-9">
+				      <div class="checkbox">
+				        <label>
+				          <input type="checkbox">记住密码
+				          <a href="#" style="margin-left: 80px;">忘记密码？</a>
+				        </label>
+				      </div>
+				    </div>
+  				</div> -->
+				<div class="form-group">
+					<div class="col-xs-offset-3 col-xs-9">
+						<button type="button" class="btn btn-primary" onclick="check()">登录</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<!--注册 end-->
+		<!--底部固定栏 begin-->
+	</body>
+</html>
+<script>
+	function showNav() {
+		$(".fixed-nav-right").toggle("slow");
+	}
+	function getMoreInfo(){
+		$(".fixed-nav-helps").toggle("slow");
+	}
+	function getSearchInfo() {
+		$(".fixed-nav-search").toggle("slow");
+	}
+	function refresh(){
+		let img = document.getElementById("validCode");
+		img.src = "[[@{/AdminInfo/validCode}]]?_="+new Date().getTime();
+	}
+	
+	function captchaqqq(){ 
+		var cap = $("#inputCode").val();
+		$.post('[[@{/Custlist//captcha}]]',"captcha="+cap,function(date){
+			alert(date);
+			if(date == "登录成功"){
+				$(location).prop('href', 'cbmv-index.html');
+			}
+		})
+	}
+	
+	//手机，密码登录验证
+	function check(){
+		var phone = $("#inputPhone").val();
+		var password = $("#inputPassword").val();
+		var captcha = $("#inputCode").val();
+		var val = "custlistMobile=" + phone + "&custlistPassword=" +password;
+		$.post('[[@{/Custlist//queryBy}]]',val,function(data){
+			var arr = JSON.parse(data);
+			if(arr.length == 0){
+				alert("账号或密码错误");
+				return;
+			}else{
+				captchaqqq();
+			}
+		})
+		
+	}
+	
+	
+</script>

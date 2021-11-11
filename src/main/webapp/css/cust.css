@@ -1,0 +1,9 @@
+.cb-data-list td span{
+	height : 50px;
+	width: 50px;
+	border-radius: 50%;
+	display: inline-block;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size:cover;
+}

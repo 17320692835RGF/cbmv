@@ -1,0 +1,7 @@
+.high{
+	color: red;
+	font-size: 20px;
+}
+.high span {
+	font-size: 10px;
+}

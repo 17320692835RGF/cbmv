@@ -1,0 +1,4 @@
+@charset "utf-8";
+/* CSS Document */
+.tooltip.bottom .tooltip-arrow{border-bottom-color: #ea741e;}
+.tooltip-inner{background-color: #ea741e;}

@@ -1,0 +1,247 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" type="text/css" th:href="@{/css/video.css}" />
+<script type="text/javascript" th:src="@{/js/video.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+	//全选勾选
+	var chkall =$("input[name=chk_all]");
+
+		$(function(){
+			//权限控制
+			if([[${msg}]] !=null){
+					alert([[${msg}]])
+					location.href = "login.html";
+				}
+					queryVideoAll(1);
+					selectAll();
+		} )
+ 		//下拉框
+ 		function selectAll(){
+			let control = $(".form-control");
+			$.post([[@{/Video/selectAll}]],"",function (data){
+				let name =JSON.parse(data);
+				control.children().remove();
+				control.append('<option></option>');
+				for(let i = 0;i<name.length ;i++){
+				var select2 = '<option value='+name[i]+'>'+name[i]+'</option>';
+					control.append(select2)
+				}
+			})
+		}
+		//查询所有
+			function queryVideoAll(pageNum){
+				$.post([[@{/Video/queryAll}]],"pageNum="+pageNum,function(data){
+					pages(data,"queryVideoAll");
+				})
+				
+			}
+</script>
+<!--查询区begin-->
+<div class="panel panel-default cb-query">
+	<div class="panel-body">
+		<form class="form-horizontal" role="form">
+			<div class="form-group form-group-sm">
+				<label for="name" class="col-sm-1 control-label">技术名称</label>
+				<div class="col-sm-1">
+					<select name="techDirection" class="form-control">
+					</select>
+				</div>
+				<label for="name" class="col-sm-1 control-label">视频名称</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" id="name"
+						placeholder="请输入视频名称" name="videoName">
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<!--查询区 end-->
+<!--按钮 begin-->
+<div class="panel panel-default cb-opers">
+	<div class="panel-body">
+		<button type="button" class="btn btn-info  btn-sm cb-btn-query"
+			onclick="selectVideos(1)">查询</button>
+		<button type="button" class="btn btn-info  btn-sm cb-btn-add">新增</button>
+		<button type="button" class="btn btn-info  btn-sm cb-btn-remove"
+			onclick="delchk()">删除</button>
+	</div>
+</div>
+<!--按钮 end-->
+<div class="cb-data-list">
+
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th><input type="checkbox" name="chk_all"
+					onchange="chk_all(event)" /></th>
+				<th>视频名称</th>
+				<th>主讲老师</th>
+				<th>技术方向</th>
+				<th>上传时间</th>
+				<th>上传人</th>
+				<th>播放数</th>
+				<th>点赞数</th>
+				<th>收藏数</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+	</table>
+	<ul class="pagination pagination-sm pull-right">
+	</ul>
+</div>
+<script type="text/javascript" th:inline="javascript">
+	function chk_all(event){
+	   	//商品的勾选
+		var chkone = $("input[name=chk_one]");
+		//全选勾选
+			var chkall =$("input[name=chk_all]");
+		//所有勾选
+		var chk =$("input");
+	     if(event.target.checked  == true){
+			 	for(let j =0;j<chk.length;j++){
+			 		chk[j].checked =true;
+			 	}
+		}else{
+				for(let j =0;j<chk.length;j++){
+			 	chk[j].checked =false;
+			 }
+		}
+	}
+		function trigger_chk_all(event){
+		   	//商品的勾选
+			var chkone = $("input[name=chk_one]");
+		//全选勾选
+			var chkall =$("input[name=chk_all]");
+		//所有勾选
+			var chk =$("input");
+			if(event.target.checked == false){
+				for(let i = 0; i <chkall.length ;i++){
+					chkall[i].checked = false;
+				}
+			}else{
+					let checked = true;
+				for(let j =0; j<chkone.length;j++){
+					if(chkone[j].checked == false){
+						checked = false;
+					}
+				}
+					if(checked){
+					for(let j =0;j<chk.length;j++){
+			 			chk[j].checked =true;
+			 			}
+					}				
+			}
+	}
+		//删除按键
+		function del(e){
+			let videoId = e.target.id;
+				if(confirm("确认删除吗？") == true){
+					$.post([[@{/Video/delVideo}]],"videoId="+videoId,function(data){
+						if(data == 1){
+							alert("删除成功");
+							queryVideoAll(1);							
+						}
+					})
+				}
+		}
+		//勾选框的删除
+		function delchk(){
+			let chkall = $("input[name=chk_all]");
+			let  checkbox = $("input[type=checkbox]");
+			let arr = new Array();
+			let  checked = false;
+			//找出为true的选框
+			for(var i =1 ; i<checkbox.length; i++){
+				if(checkbox[i].checked  ==  true){
+				checked = true;
+				arr[i-1] = checkbox[i].id;
+				}
+			}
+			//判断是否有选中
+			if(checked == false){
+				alert("请勾选！");
+			}else if (arr.length != 1){
+				//选中的删除
+				let  con  = confirm("确认删除选中的吗？"); ;
+				if(con  == true){
+					$.post([[@{/Video/delVideos}]],"arr="+arr,function(data){
+						if(data > 0 ){
+							chkall[0].checked = false;
+							alert("删除成功");
+							queryVideoAll(1);
+						}
+					})
+				}
+			} 	
+		}
+		function change(e){
+			let videoId = e.target.id;
+			$.post([[@{/Video/change}]],"videoId="+videoId, function (data){
+				$(".main").html(data);
+			})
+			
+		}
+		//条件查询
+		function selectVideos(pageNum){
+			//下拉框
+			let techDirection = $("select[name=techDirection]").val();
+			let  videoName= $("input[name=videoName]").val();
+			if(techDirection == "" && videoName == ""){
+				queryVideoAll(1);
+			}else{
+			//下拉框验证
+			let from = $(".form-horizontal");
+			$.post([[@{/Video/selectVideos}]],"videoName="+videoName+"&techDirection="+techDirection+"&pageNum="+pageNum,function (data){
+				pages(data,"selectVideos");
+			})
+			}
+		}
+ //封装分页
+		function pages(data,method){
+			//得到所有数据
+			let all =JSON.parse(data);
+			//得到循环对象
+			let videos = all[0].list;
+			//得到总共页数
+			let pages = all[0].pages;
+			//当前页码
+			let pageNum =all[0].pageNum;
+			$("tbody").remove();
+			
+			for(let i = 0; i<videos.length ; i++){
+			let  tr = '<tr >'+
+			      '<td class="col-check"><input type="checkbox" name="chk_one" id='+videos[i].videoId +' onchange="trigger_chk_all(event)"/>'+'</td>'+
+			      '<td>'+videos[i].videoName+'</td>'+
+			      '<td>'+videos[i].lecturer+'</td>'+
+			      '<td>'+videos[i].techDirection+'</td>'+
+			      '<td>'+videos[i].uploadTime+'</td>'+
+			      '<td>'+videos[i].upLoader+'</td>'+
+			      '<td>'+videos[i].videoNum+'</td>'+
+			      '<td>'+videos[i].fabulousNum+'</td>'+
+			      '<td>'+videos[i].collectNum+'</td>'+	
+			      '<td  class="col-oper"><a href="#" id='+videos[i].videoId+' onclick="change(event)">修改</a><a href="#" id='+videos[i].videoId+' onclick="del(event)">删除</a></td>'+
+			    '</tr>';
+			   $(".table-bordered").append(tr); 
+			}
+			$('.pagination li').remove();
+			if(pageNum == 1){
+				$(".pagination").append('<li><a href="javascript:void(0)">&laquo;</a></li>');
+			}else{
+				$(".pagination").append('<li><a href="javascript:'+method+'('+(pageNum-1)+')">&laquo;</a></li>');
+			}					
+				for(let i =0;i<pages; i++){
+						if(pageNum == (i+1)){
+			    	$('.pagination').append('<li  class="active"><a href="javascript:'+method+'('+(i+1)+')">'+(i+1)+'</a></li>');
+						}else{
+						$('.pagination').append('<li><a href="javascript:'+method+'('+(i+1)+')">'+(i+1)+'</a></li>');
+						}
+			} 
+			if(pageNum == pages){
+				$(".pagination").append('<li><a href="javascript:void(0)">&raquo;</a></li>');
+			}else{
+				$(".pagination").append('<li><a href="javascript:'+method+'('+(pageNum+1)+')">&raquo;</a></li>');
+			}  	
+
+}
+</script>
+</html>

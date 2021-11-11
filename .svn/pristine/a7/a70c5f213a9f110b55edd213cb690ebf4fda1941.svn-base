@@ -1,0 +1,385 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<link th:href="@{/css/um.css}" rel="stylesheet" type="text/css">
+<link th:href="@{/css/register.css}" rel="stylesheet" type="text/css">
+<script type="text/javascript" th:src="@{/js/um.js}"></script>
+
+<!--查询区begin-->
+<div class="panel panel-default cb-query">
+	<div class="panel-body">
+		<form class="form-horizontal" role="form">
+			<div class="form-group form-group-sm">
+				<label for="phone" class="col-sm-1 control-label">手机号</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" id="phone"
+						placeholder="请输入名称">
+				</div>
+				<label for="name" class="col-sm-1 control-label">姓名</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" id="name"
+						placeholder="请输入名称">
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<!--查询区 end-->
+<!--按钮 begin-->
+<div class="panel panel-default cb-opers">
+	<div class="panel-body">
+		<button type="button" class="btn btn-info  btn-sm" id="searchBtn" onclick="searchInfo(1)">查询</button>
+		<button type="button" class="btn btn-info  btn-sm" data-toggle="modal" data-target="#mainmodel" onclick="addInfo()">新增</button>
+		<button type="button" class="btn btn-info  btn-sm" id="delBtn" onclick="delMany()">删除</button>
+	</div>
+</div>
+<!-- 模态框 begin -->
+<div class="modal fade" id="mainmodel" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="exampleModalLabel">添加用户信息</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" method="post" id="formsInfo">
+							<div class="form-group" style="display:none">
+								<label for="umlistId" class="col-sm-2 control-label">Id</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="umlistId" name="umlistId">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="umlistName" class="col-sm-2 control-label">姓名<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="umlistName" placeholder="请输入姓名" name="umlistName">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="umlistPhone" class="col-sm-2 control-label">手机号<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="umlistPhone" placeholder="请输入手机号" name="umlistPhone">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="umlistCard" class="col-sm-2 control-label">身份证<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="umlistCard" placeholder="请输入身份证号" name="umlistCard">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="umlistPwd" class="col-sm-2 control-label">密码<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="password" class="form-control" id="umlistPwd" placeholder="请输入密码" name="umlistPwd">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="umlistnewPwd" class="col-sm-2 control-label">确认密码<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="password" class="form-control" id="umlistnewPwd" placeholder="请再次输入密码" name="umlistnewPwd">
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal" id="close">关闭</button>
+						<button type="button" class="btn btn-primary" id="save" onclick=checkPhoneAndCard()>保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+<!-- 模态框 end -->
+<!--按钮 end-->
+<div class="cb-data-list">
+
+	<table class="table table-bordered">
+			<tr>
+				<th><input type="checkbox" name="selectall" id="selectall"
+					value="" onclick="checkAll(event)"/></th>
+				<th>姓名</th>
+				<th>手机号</th>
+				<th>身份证</th>
+				<th>操作</th>
+			</tr>
+		<tbody>
+			
+		</tbody>
+	</table>
+
+	<ul class="pagination pagination-sm pull-right">
+		<li><a href="#">&laquo;</a></li>
+		<li><a href="#">1</a></li>
+		<li><a href="#">2</a></li>
+		<li><a href="#">3</a></li>
+		<li><a href="#">4</a></li>
+		<li><a href="#">5</a></li>
+		<li><a href="#">&raquo;</a></li>
+	</ul>
+</div>
+
+<script type="text/javascript"  th:inline="javascript">
+	var pageSize = 3;
+	//权限控制
+	if([[${msg}]] !=null){
+			alert([[${msg}]])
+			location.href = "login.html"
+		}
+		$(function(){
+			//页面初始完毕即从数据库拉取数据
+			query(1);
+		})
+		
+	//新增按钮
+	function addInfo() {
+		$("#formsInfo")[0].reset();
+		$("#exampleModalLabel").html("添加用户信息");
+	}
+	//查询所有
+	function query(pageNum) {
+		var pageParam = "&pageNum=" + pageNum + "&pageSize=" + pageSize;
+		$.get([[@{/umList/queryAll}]],pageParam,function(data){
+			var data = JSON.parse(data);
+			var datas = data[0].list;
+			var total = data[0].total;
+			queryWithPage(total,datas,pageNum);
+			
+			//全选取消
+			$("input[name=selectone]").click(function(){
+				checkSinger();
+			})
+			function checkSinger() {
+				var flag = true;
+				for(let i = 0; i < $("input[name=selectone]").length; i++) {
+					if(!$("input[name=selectone]").eq(i).is(":checked")){
+						flag = false;
+			            break;
+					}
+				}
+				$("input[name=selectall]").prop("checked", flag);
+			}
+		
+		})
+	}
+	//带分页的查询
+	function queryWithPage(total,datas,pageNum){
+		$(".pagination").children().remove();	
+		if(pageNum == 1){
+			$(".pagination").append(' <li><a href="javascript:void(0)">&laquo;</a>');
+		}else{
+			$(".pagination").append(' <li><a href="javascript:query('+(pageNum - 1)+')">&laquo;</a>');
+		}	
+		for(let i = 0 ; i < parseInt((total + pageSize-1)/pageSize); i++){
+			if(i == pageNum -1){
+				$(".pagination").append('<li class="active"><a href="javascript:query('+(i + 1)+')">'+(i + 1)+'</a>')	
+			}else{
+				$(".pagination").append('<li><a href="javascript:query('+(i + 1)+')">'+(i + 1)+'</a>')	
+			}			
+		}
+		if(pageNum == parseInt((total +pageSize-1 )/pageSize)){
+			$(".pagination").append(' <li><a href="javascript:void(0)">&raquo;</a>');
+		}else{
+			$(".pagination").append(' <li><a href="javascript:query('+(pageNum + 1)+')">&raquo;</a>');
+		}
+		
+		$(".table-bordered tr~tr").remove();
+		for(let i = 0 ; i < datas.length; i++ ){
+			$(".table-bordered").append('<tr>' +
+					'<td class="col-check"><input type="checkbox" name="selectone" ' +
+					' value="'+ datas[i].umlistId +'" /></td>' +
+					'<td>'+ datas[i].umlistName +'</td>' +
+					'<td>'+ datas[i].umlistPhone +'</td>' +
+					'<td>'+ datas[i].umlistCard +'</td>' +
+					'<td class="col-oper"><a href="#" name="changeInfo" onclick="changeInfo(event)">修改</a><a href="#" name="delInfo" onclick="delInfo(event)">删除</a></td>' +
+				'</tr>');	
+		}
+	}
+	
+	//模糊查询
+	function searchInfo(pageNum) {
+		var umlistPhone = $("#phone").val();
+		var umlistName = $("#name").val();
+		var params = "umlistPhone=" + umlistPhone + "&umlistName=" + umlistName + "&pageSize=" + pageSize + "&pageNum=" + pageNum;
+		$.post([[@{/umList/queryByPhoneAndName}]],params,function(data){
+			var data = JSON.parse(data);
+			var datas = data[0].list;
+			var total = data[0].total;
+			$(".pagination").children().remove();	
+			if(pageNum == 1){
+				$(".pagination").append(' <li><a href="javascript:void(0)">&laquo;</a>');
+			}else{
+				$(".pagination").append(' <li><a href="javascript:searchInfo('+(pageNum - 1)+')">&laquo;</a>');
+			}	
+			for(let i = 0 ; i < parseInt((total + pageSize-1)/pageSize); i++){
+				if(i == pageNum -1){
+					$(".pagination").append('<li class="active"><a href="javascript:searchInfo('+(i + 1)+')">'+(i + 1)+'</a>')	
+				}else{
+					$(".pagination").append('<li><a href="javascript:searchInfo('+(i + 1)+')">'+(i + 1)+'</a>')	
+				}			
+			}
+			if(pageNum == parseInt((total +pageSize-1 )/pageSize)){
+				$(".pagination").append(' <li><a href="javascript:void(0)">&raquo;</a>');
+			}else{
+				$(".pagination").append(' <li><a href="javascript:searchInfo('+(pageNum + 1)+')">&raquo;</a>');
+			}
+			
+			$(".table-bordered tr~tr").remove();
+			for(let i = 0 ; i < datas.length; i++ ){
+				$(".table-bordered").append('<tr>' +
+						'<td class="col-check"><input type="checkbox" name="selectone" ' +
+						' value="'+ datas[i].umlistId +'" /></td>' +
+						'<td>'+ datas[i].umlistName +'</td>' +
+						'<td>'+ datas[i].umlistPhone +'</td>' +
+						'<td>'+ datas[i].umlistCard +'</td>' +
+						'<td class="col-oper"><a href="#" name="changeInfo" onclick="changeInfo(event)">修改</a><a href="#" name="delInfo" onclick="delInfo(event)">删除</a></td>' +
+					'</tr>');	
+			}
+		})
+	} 
+	
+	//保存
+	function save(){
+		if(validateUserInfo().form()){
+			$.post([[@{/umList/chooseSaveOrupdate}]],$("#formsInfo").serialize(),function(data){
+				$('#mainmodel').modal('hide');
+				if(data == "ok"){
+					alert("保存成功！")
+				}else {
+					alert("保存失败！")
+				}
+				query(1);
+			})
+		}else{}
+	}
+	//修改
+	function changeInfo(e){
+		var id = $(e.target).parent().parent().children("td:first").children("input").val();
+		$.post([[@{/umList/queryById}]],"umlistId=" + id,function(data){
+			$('#mainmodel').modal('show');
+			var datas = JSON.parse(data);
+			$("input[name=umlistId]").val(datas.umlistId);
+			$("input[name=umlistName]").val(datas.umlistName);
+			$("input[name=umlistPhone]").val(datas.umlistPhone);
+			$("input[name=umlistCard]").val(datas.umlistCard);
+			$("input[name=umlistPwd]").val(datas.umlistPwd);
+			$("input[name=umlistnewPwd]").val(datas.umlistPwd);
+			$("#exampleModalLabel").text("修改用户信息");
+		})
+	}
+	//删除
+	function delInfo(e){
+		let umlistId =  $(e.target).parent().parent().children("td:first").children("input").val();
+		if (confirm("确定要删除吗？")) {
+			$(e.target).parent().parent().remove();
+			$.post([[@{/umList/del}]],"umlistId=" + umlistId,function(data){})
+			alert("删除成功！");
+			query(1);
+		} else {
+			
+		}
+	}
+	//批量删除
+	function delMany() {
+		if(!$("#selectall").prop("checked")){
+			alert("请选择行！");
+		}else {
+			var delFlag = confirm("是否确认删除？");
+			if(delFlag == true){
+				var ids = "";
+				var n = 0;
+				for(let i = 0; i < $("input[name=selectone]").length; i++){
+					if($("input[name=selectone]").eq(i).is(":checked")){
+						var id = $("input[name=selectone]").eq(i).val();
+						if(n == 0){
+							ids += "umlistIds=" + id; 
+						}else {
+							ids += "&umlistIds=" + id; 
+						}
+						n++;
+					}
+				}
+				if(ids == ""){
+					alert("请选择行！");
+					return;
+				}
+				$.post([[@{/umList/deleteMany}]],ids,function(data){
+					if(data == "ok"){
+						alert("删除成功！");
+						query(1);
+						$("input[name=selectall]").prop("checked", false);
+					}
+				});
+				return true;
+			}else {
+				return false;
+			}
+		}
+  	}
+	//表单验证
+	function validateUserInfo() {
+		return $("#formsInfo").validate({
+			rules: {
+				umlistName: {
+					required: true
+				},
+				umlistPhone: {
+					required: true,
+					digits:true,
+					minlength: 11,
+					maxlength: 11
+				},
+				umlistCard: {
+					required: true,
+					minlength: 18,
+					maxlength: 18
+				},
+				umlistPwd: {
+					required: true,
+					minlength: 6,
+					maxlength: 18
+				},
+				umlistnewPwd: {
+					required: true,
+					equalTo: "#umlistPwd"
+				}
+			},
+			messages: {
+				umlistName: {
+					required: "<span style='color:red;'>请输入姓名</span>"
+				},
+				umlistPhone: {
+					required: "<span style='color:red;'>请输入手机号</span>",
+					digits: "<span style='color:red;'>只能输入数字</span>",
+					minlength: $.validator.format("<span style='color:red;'>手机号不能小于11个字符</span>"),
+					maxlength: $.validator.format("<span style='color:red;'>手机号不能多于 11个字符</span>")
+				},
+				umlistCard: {
+					required: "<span style='color:red;'>请输入身份证</span>",
+					minlength: $.validator.format("<span style='color:red;'>身份证不能小于18个字符</span>"),
+					maxlength: $.validator.format("<span style='color:red;'>身份证不能多于 18个字符</span>")
+				},
+				umlistPwd: {
+					required: "<span style='color:red;'>请输入密码</span>",
+					minlength: $.validator.format("<span style='color:red;'>密码小于6个字符</span>"),
+					maxlength: $.validator.format("<span style='color:red;'>密码不能多于 18个字符</span>")
+				},
+				umlistnewPwd: {
+					required: "<span style='color:red;'>请再次输入密码</span>",
+					equalTo: "<span style='color:red;'>两次密码不一致</span>"
+				}
+			}
+		})
+	}
+	//检验手机号和身份证是否重复
+	function checkPhoneAndCard(){
+		var phone = $("#umlistPhone").val();
+		var card = $("#umlistCard").val();
+		var id = $("#umlistId").val();
+		$.post([[@{/umList/queryByPhoneAndCard}]],"umlistPhone=" + phone + "&umlistCard=" + card + "&umlistId=" + id,function(data){
+			var arr = JSON.parse(data);
+			if(arr.length != 0){
+				alert("手机号或身份证已存在!请重新输入！");	
+			}else{
+				save();
+			}
+		});
+	}
+</script>
+</html>

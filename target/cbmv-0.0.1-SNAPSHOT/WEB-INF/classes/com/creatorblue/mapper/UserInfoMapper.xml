@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.creatorblue.mapper.UserInfoMapper">
+	
+	<!--用户注册，添加用户信息 -->
+	<insert id="addUserInfo" parameterType="com.creatorblue.mapper.UserInfoMapper">
+		insert into t_user_info(user_phone,user_password,user_nick_name,user_photo) VALUES(#{userPhone},#{userPassword},#{userNickName},#{userPhoto});
+	</insert>
+	
+	<resultMap type="com.creatorblue.domain.UserInfo" id="userInfo">
+		<id column="user_id" property="userId"></id>
+		<result column="user_phone" property="userPhone"/>
+		<result column="user_password" property="userPassword"/>
+		<result column="user_nick_name" property="userNickName"/>
+		<result column="user_photo" property="userPhoto"/>
+	</resultMap>
+	
+	<!--查询用户名和密码是否匹配-->
+	<select id="queryBy" resultMap="userInfo">
+		select * from t_user_info where user_phone=#{userPhone} and user_password=#{userPassword}
+	</select>
+	
+	<!-- 查询手机号是否重复 -->
+	<select id="queryByPhone" resultMap="userInfo">
+		select * from t_user_info where user_phone = #{userPhone}
+	</select>
+</mapper>

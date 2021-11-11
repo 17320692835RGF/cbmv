@@ -1,0 +1,89 @@
+<html  xmlns:th="http://www.thymeleaf.org">
+<script  type="text/javascript" th:src="@{/js/alert.js}"></script>
+<style>
+	.alert-pormpt{//自定义提示框样式
+	background:rgba(255,0,0,0.8);
+		color:#fff;
+	}
+</style>
+<script type="text/javascript" th:inline="javascript">
+
+		$(function(){
+			//权限控制
+			if([[${msg}]] !=null){
+					warning_prompt([[${msg}]])
+					location.href = "login.html";
+				} 
+			count(1);
+		})	
+		$(".form-control").change(function(){
+			var time ;
+			if($(".form-control").val() == "小时"){
+				time = 1;
+			}
+			if($(".form-control").val() == "日"){
+				time = 2;
+			}
+			if($(".form-control").val() == "周"){
+				time =3;
+			}
+			if($(".form-control").val() == "月"){
+				time =4;
+			}
+		
+			$.get([[@{/AdminInfo/count}]],"time="+time,function(data){
+				var arr = JSON.parse(data);
+				$("#regist")[0].innerHTML=arr[1];
+				$("#online")[0].innerHTML=arr[0];
+				$("#videotime")[0].innerHTML=arr[3];
+				$("#goods")[0].innerHTML=arr[2];
+			})
+		})
+		function count(time){
+		$.get([[@{/AdminInfo/count}]],"time="+time,function(data){
+			var arr = JSON.parse(data);
+			$("#regist")[0].innerHTML=arr[1];
+			$("#online")[0].innerHTML=arr[0];
+			$("#videotime")[0].innerHTML=arr[3];
+			$("#goods")[0].innerHTML=arr[2];
+		})
+	}
+</script>
+<div class="panel panel-default">
+    <div class="panel-body">
+    	<div class="row form-group-sm"><span class="col-sm-1">周期</span>
+    		<div class="col-sm-3">
+	    		<select class="form-control">
+	    			<option  >小时</option>
+	    			<option >日</option>
+	    			<option >周</option>
+	    			<option >月</option>
+	    		</select>
+    		</div>
+    	</div>
+		<div class="col-sm-3">
+			<dl>
+				<dt id="regist" style="color: red"></dt>
+				<dd>注册人数</dd>
+			</dl>
+		</div>
+		<div class="col-sm-3">
+			<dl>
+				<dt id="online" style="color: red"></dt>
+				<dd>在线人数</dd>
+			</dl>
+		</div>
+		<div class="col-sm-3">
+			<dl>
+				<dt id="videotime" style="color: red"></dt>
+				<dd>播放数</dd>
+			</dl>
+		</div>
+		<div class="col-sm-3">
+			<dl>
+				<dt id="goods" style="color: red"></dt>
+				<dd>点赞数</dd>
+			</dl>
+		</div>
+	</div>
+</div>

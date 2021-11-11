@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title></title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/cbmv_index.css}"/>
+    <link rel="shortcut icon" th:href="@{/img/favicon.ico}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+    <script  type="text/javascript" th:src="@{/js/alert.js}"></script>
+    <style>
+        .alert-pormpt{//自定义提示框样式
+        background:rgba(255,0,0,0.8);
+            color:#fff;
+        }
+    </style>
+    <script type="text/javascript" th:inline="javascript">
+      //头部搜索，更多及菜单的显示与隐藏
+      function showNav() {
+        $(".fixed-nav-right").toggle("slow");
+      }
+
+      function getMoreInfo() {
+        $(".fixed-nav-helps").toggle("slow");
+      }
+
+      function getSearchInfo() {
+        $(".fixed-nav-search").toggle("slow");
+      }
+
+      //注销
+      function removesession() {
+        $.post([[@{/Custlist/removesession
+      }]],
+        "", function () {
+          window.location.href = [[@{/cbmv-index}]];
+        })
+      }
+
+      $(function () {
+        //分类切换效果
+        $(".list-inline li").each(function (index) {
+          $(this).click(function () {
+            $(".list-inline li").removeClass("actives");
+            $(".list-inline li").eq(index).addClass("actives");
+          })
+        })
+        $(".list-inline span").each(function (index) {
+          $(this).click(function () {
+            $(".list-inline span").removeClass("actives");
+            $(".list-inline span").eq(index).addClass("actives");
+          })
+        })
+        //得到所有分类名称
+        queryallVideos(1);
+        if ([[${msg}]] != null) {
+          warning_prompt([[${msg}]]);
+        }
+      })
+
+      //页面初始查询
+      function queryallVideos(pageNum) {
+        $.post([[@{/cbmvVideo/queryVideos
+      }]],
+        "techDirection=全部&pageNum=" + pageNum, function (data) {
+          let all = JSON.parse(data);
+          let list = all[0].list;
+          //总页数
+          let pages = all[0].pages;
+          //当前页码
+          let pageNum = all[0].pageNum;
+          let div = $(".cbmv-videos");
+          div.children().remove();
+          for (let i = 0; i < list.length; i++) {
+            let divVideo = '<div class="cbmv-video1">' +
+                '<dl>' +
+                '<dt><a href="/cbmv/cbmvVideo/VideoId?videoId=' + list[i].videoId + '" ><img src="/cbmv/coverPhoto/' + list[i].coverPhoto + '" style="height:170px;width:100%;"></a></dt>' +
+                '<dd>' +
+                '<div class="flex-container">' +
+                '<div>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '</div>' +
+                '<div><span class="video-desc">免费视频</span></div>' +
+                '</div>' +
+                '</dd>' +
+                '<dd>' +
+                '<div class="video-title"><span><a href="/cbmv/cbmvVideo/VideoId?videoId=' + list[i].videoId + '" >' + list[i].videoName + '</a></span></div>' +
+                '</dd>' +
+                '<dd>' +
+                '<div class="flex-container">' +
+                '<div class="video-class"><span>中级</span></div>' +
+                '<div><span>观看次数' + list[i].videoNum + '</span></div>' +
+                '</div>' +
+                '</dd>' +
+                '</dl>' +
+                '<a href="/cbmv/cbmvVideo/VideoId?videoId=' + list[i].videoId + '" ><div class="video-play-btn"><span class="glyphicon glyphicon-play" style="font-size:30px;color:white;border:1px,solid,red"></span></div></a>' +
+                '</div>'
+            div.append(divVideo);
+          }
+          $(".pagination li").remove();
+          if (pageNum == 1) {
+            $(".pagination").append('<li><a href="javascript:void(0)">&laquo;</a></li>');
+          } else {
+            $(".pagination").append('<li><a href="javascript:queryallVideos(' + (pageNum - 1) + ')">&laquo;</a></li>');
+          }
+          for (let i = 0; i < pages; i++) {
+            if (pageNum == (i + 1)) {
+              $(".pagination").append('<li  class="active"><a href="javascript:queryallVideos(' + (i + 1) + ')">' + (i + 1) + '</a></li>');
+            } else {
+              $(".pagination").append('<li><a href="javascript:queryallVideos(' + (i + 1) + ')">' + (i + 1) + '</a></li>');
+            }
+          }
+          if (pageNum == pages) {
+            $(".pagination").append('<li><a href="javascript:void(0)">&raquo;</a></li>');
+          } else {
+            $(".pagination").append('<li><a href="javascript:queryallVideos(' + (pageNum + 1) + ')">&raquo;</a></li>');
+          }
+
+
+        }
+      )
+      }
+
+
+      //分类查询
+      function queryVideos(e, pageNum) {
+        let tech = e.target.innerHTML;
+        $.post([[@{/cbmvVideo/queryVideos
+      }]],
+        "techDirection=" + tech + "&pageNum=" + pageNum, function (data) {
+          let all = JSON.parse(data);
+          let list = all[0].list;
+          //总页数
+          let pages = all[0].pages;
+          //当前页码
+          let pageNum = all[0].pageNum;
+          let div = $(".cbmv-videos");
+          div.children().remove();
+          for (let i = 0; i < list.length; i++) {
+            let divVideo = '<div class="cbmv-video1">' +
+                '<dl>' +
+                '<dt><a href="/cbmv/cbmvVideo/VideoId?videoId=' + list[i].videoId + '" ><img src="/cbmv/coverPhoto/' + list[i].coverPhoto + '" style="height:170px;width:100%;"></a></dt>' +
+                '<dd>' +
+                '<div class="flex-container">' +
+                '<div>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '<span class="glyphicon glyphicon-star"></span>' +
+                '</div>' +
+                '<div><span class="video-desc">免费视频</span></div>' +
+                '</div>' +
+                '</dd>' +
+                '<dd>' +
+                '<div class="video-title"><span><a href="/cbmv/cbmvVideo/VideoId?videoId=' + list[i].videoId + '" >' + list[i].videoName + '</a></span></div>' +
+                '</dd>' +
+                '<dd>' +
+                '<div class="flex-container">' +
+                '<div class="video-class"><span>中级</span></div>' +
+                '<div><span>观看次数' + list[i].videoNum + '</span></div>' +
+                '</div>' +
+                '</dd>' +
+                '</dl>' +
+                '<a href="/cbmv/cbmvVideo/VideoId?videoId=' + list[i].videoId + '" ><div class="video-play-btn"><span class="glyphicon glyphicon-play" style="font-size:30px;color:white;border:1px,solid,red"></span></div></a>' +
+                '</div>'
+            div.append(divVideo);
+          }
+          $(".pagination li").remove();
+          if (pageNum == 1) {
+            $(".pagination").append('<li><a href="javascript:void(0)">&laquo;</a></li>');
+          } else {
+            $(".pagination").append('<li><a href="javascript:queryVideos(e,' + (pageNum - 1) + ')">&laquo;</a></li>');
+          }
+          for (let i = 0; i < pages; i++) {
+            if (pageNum == (i + 1)) {
+              $(".pagination").append('<li  class="active"><a href="javascript:queryVideos(e,' + (i + 1) + ')">' + (i + 1) + '</a></li>');
+            } else {
+              $(".pagination").append('<li><a href="javascript:queryVideos(e,' + (i + 1) + ')">' + (i + 1) + '</a></li>');
+            }
+          }
+          if (pageNum == pages) {
+            $(".pagination").append('<li><a href="javascript:void(0)">&raquo;</a></li>');
+          } else {
+            $(".pagination").append('<li><a href="javascript:queryVideos(e,' + (pageNum + 1) + ')">&raquo;</a></li>');
+          }
+        }
+      )
+
+
+      }
+
+    </script>
+</head>
+
+<style>
+
+    .cbmv-videos li {
+        width: 200px;
+        margin-left: 300px;
+        float: left;
+    }
+</style>
+<body>
+<div class="">
+    <!--顶部登录及logo模块 begin-->
+    <div class="cbmv-header">
+        <!--登录、注册 begin-->
+        <div class="flex-container">
+            <div class="cbmv-header-left">
+                <span class="glyphicon glyphicon-th-list more-icon"></span> <a
+                    href="javascript:void(0)" onclick="getMoreInfo()">更多</a>
+<!--                <span class="glyphicon glyphicon-search search-icon"></span> -->
+<!--                <a href="javascript:void(0)" onclick="getSearchInfo()">搜索</a>-->
+            </div>
+            <div class="cbmv-header-right">
+                <a th:utext="${session.userName2}!=null?${session.userName2}:'登录'"
+                   th:href="@{/cbmv-login}">登录</a>
+                <a th:utext="${session.userName2}!=null?${session.out1}:'注册'"
+                   th:href="@{/register}">注册</a>
+            </div>
+        </div>
+        <!--登录、注册 end-->
+        <!--logo 下拉菜单 begin-->
+        <div>
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle"
+                                data-toggle="collapse" onclick="showNav()">
+                            <span class="sr-only">切换导航</span> <span class="icon-bar"></span>
+                            <span class="icon-bar"></span> <span class="icon-bar"></span>
+                        </button>
+                        <img th:src="@{/img/logo.png}"/>
+                    </div>
+                    <div class="fixed-nav-right">
+                        <ul>
+                            <li><a th:href="@{/cbmv-index}">首页</a></li>
+                            <li><a th:href="@{/login}">后台管理</a></li>
+                        </ul>
+                    </div>
+                    <div class="fixed-nav-helps">
+                        <ul>
+                            <li><a href="#">咨询热线</a></li>
+                            <li><a href="#">官网</a></li>
+                        </ul>
+                    </div>
+<!--                    <div class="fixed-nav-search">-->
+<!--                        <input type="text" placeholder="请输入要搜索的内容" class="input-sm"/>-->
+<!--                        <button class="btn btn-primary btn-sm">搜索</button>-->
+<!--                    </div>-->
+                </div>
+            </nav>
+        </div>
+        <!--logo 下拉菜单 end-->
+    </div>
+    <!--顶部登录及logo模块 end-->
+
+    <!-- 顶部轮播图 begin -->
+    <div class="cbmv-slide container">
+        <div id="carousel-example-generic" class="carousel slide my-slide-show" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+                <li data-target="#carousel-example-generic" data-slide-to="3"></li>
+            </ol>
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner" role="listbox">
+                <div class="item active">
+                    <img th:src="@{/img/slide1.jpg}">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img th:src="@{/img/slide2.jpg}">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img th:src="@{/img/slide3.jpg}">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+                <div class="item">
+                    <img th:src="@{/img/slide4.jpg}">
+                    <div class="carousel-caption">
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+    <!-- 顶部轮播图 end -->
+    <!--上部分类导航栏模块 begin-->
+    <div class="cbmv-top">
+        <div class="cbmv-type2">
+            <div class="cbmv-type1-left">
+                <span class="cbmv-type1-font">动物种类</span>
+            </div>
+            <div class="cbmv-type1-right">
+                <ul class="list-inline">
+                    <li class="actives"><a href="#"><span class="actives techDirection" onclick="queryallVideos(1)">全部</span></a>
+                    </li>
+                    <li><a href="#"><span class="techDirection" onclick="queryVideos(event,1)">猫科</span></a>
+                    </li>
+                    <li><a href="#"><span class="techDirection" onclick="queryVideos(event,1)">犬科</span></a>
+                    </li>
+                    <li><a href="#"><span class="techDirection" onclick="queryVideos(event,1)">鱼类</span></a>
+                    </li>
+                    <li><a href="#"><span class="techDirection" onclick="queryVideos(event,1)">两栖</span></a>
+                    </li>
+                    <li><a href="#"><span class="techDirection" onclick="queryVideos(event,1)">鸟类</span></a>
+                    </li>
+                    <li><a href="#"><span class="techDirection" onclick="queryVideos(event,1)">爬行</span></a>
+                    </li>
+                    <li><a href="#"><span class="techDirection" onclick="queryVideos(event,1)">软体</span></a>
+                    </li>
+                    <li><a href="#"><span class="techDirection" onclick="queryVideos(event,1)">节肢</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="cbmv-type1-last">
+            <span class="cbmv-type1-font">全部视频</span>
+        </div>
+    </div>
+    <!--上部分类导航栏模块 end-->
+
+    <!--中间视频预览及分页模块 begin-->
+    <div class="container cbmv-videos">
+
+    </div>
+    <!--中间视频预览及分页模1块 end-->
+
+    <!--分页 begin-->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li>
+                <a href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li>
+                <a href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    </nav>
+
+    <!--分页 end-->
+    <!--底部公司有关信息模块 begin-->
+    <div class="cbmv-footer container">
+        <!--文字信息 begin-->
+        <div class="cbmv-cpinfo">
+            <p>
+                <span class="cbmv-cpinfo-left">幼儿认知教育</span>
+            </p>
+            <p>© 2021 河北工程大学</p>
+            <p>信息与电气工程学院</p>
+            <p>计算机1804创新创业3 &nbsp; 16组 &nbsp;&nbsp; 版权所有</p>
+        </div>
+        <!--文字信息 end-->
+    </div>
+    <!--底部公司有关信息模块 end-->
+
+</div>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.creatorblue.mapper.VideoInfoMapper">
+		<resultMap type="com.creatorblue.domain.VideoInfo" id="videoInfo">
+			<id  column="video_id"  property="videoId" />
+			<result column="video_name" property="videoName" />
+			<result column="tech_direction" property="techDirection" />
+			<result column="lecturer" property="lecturer" />
+			<result column="video_num" property="videoNum" />
+			<result column="fabulous_num" property="fabulousNum" />
+			<result column="collect_num" property="collectNum" />
+			<result column="share_num" property="shareNum" />
+			<result column="cover_photo" property="coverPhoto" />
+			<result column="upload_time" property="uploadTime"/>
+			<result column="upLoader" property="upLoader"/>
+			<result column="video_address" property="videoAddress"/>
+			<result column="video_description" property="videoDescription"/>
+		</resultMap>
+	<parameterMap type="com.creatorblue.domain.VideoInfo" id="video">
+		<parameter property="videoId"/>
+		<parameter property="videoName"/>
+		<parameter property="techDirection"/>
+		<parameter property="lecturer"/>
+		<parameter property="videoNum"/>
+		<parameter property="fabulousNum"/>
+		<parameter property="collectNum"/>
+		<parameter property="shareNum"/>
+		<parameter property="coverPhoto"/>
+		<parameter property="uploadTime"/>
+		<parameter property="upLoader"/>	
+		<parameter property="videoAddress"/>	
+		<parameter property="videoDescription"/>					
+	</parameterMap>
+	<select id="queryVideoAll" resultMap="videoInfo" >
+	select * from t_video  ORDER BY t_video.upload_time desc
+	</select>
+	
+	<insert id="saveVideo"  parameterType ="com.creatorblue.domain.VideoInfo">
+	 insert into t_video(video_id,video_name,tech_direction,lecturer,video_description,video_num,fabulous_num,collect_num,cover_photo,upLoader,video_address) values(#{videoId},#{videoName},
+	 #{techDirection},#{lecturer},#{videoDescription},#{videoNum},#{fabulousNum},#{collectNum},#{coverPhoto},#{upLoader},#{videoAddress})
+	</insert>
+	
+	<delete id="delVideo" parameterType="String">
+	delete from t_video where video_id  = #{videoId}
+	</delete>
+
+	<delete id="delVideos" parameterType="list">
+		delete from t_video where video_id in
+		<foreach collection="array" item="id"   open="(" separator="," close=")">
+		#{id}
+		</foreach>
+	</delete>
+	
+	<select id="change" resultMap="videoInfo">
+		select * from t_video where video_id = #{videoId}
+	</select>
+	
+	<update id="changesave" parameterType ="com.creatorblue.domain.VideoInfo">
+		update t_video  set video_name=#{videoName},tech_direction= #{techDirection},lecturer=#{lecturer},video_description=#{videoDescription},cover_photo=#{coverPhoto},upLoader=#{upLoader},video_address=#{videoAddress} 
+		where video_id = #{videoId}
+	</update>
+	<!-- 下拉框 -->
+	<select id="selectAll" resultType="String" >
+		SELECT subjlist_name FROM t_subjlist
+	</select>
+	
+	<!-- 条件查询 -->
+	<select id="selectVideos" resultMap="videoInfo">
+		select * from t_video where  1=1
+		<if test="techDirection !='' and techDirection != null">
+		 and tech_direction  = #{techDirection}
+		</if>
+		<if test="videoName !='' and videoName != null">
+		<bind name="video_name" value="'%'+videoName+'%'"/>
+		 and video_name like #{video_name}
+		</if>
+	</select>
+	
+	<update id="updateVideos" parameterMap="video">
+	update t_video  set video_name=#{videoName},tech_direction= #{techDirection},lecturer=#{lecturer},video_description=#{videoDescription}
+	<if test="coverPhoto != '' and coverPhoto !=null "  >
+	,cover_photo=#{coverPhoto}
+	</if>
+	<if test="videoAddress != '' and videoAddress != null">
+	,video_address=#{videoAddress} 
+	</if>
+	,upLoader=#{upLoader} where video_id = #{videoId}
+	</update>
+	</mapper>

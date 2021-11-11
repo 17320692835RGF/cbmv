@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.creatorblue.mapper.CustlistInfoMapper">
+	
+	<resultMap type="com.creatorblue.domain.CustlistInfo" id="resultMap">
+		<id property="custlistId" column="custlist_id"/>
+		<result property="custlistName" column="custlist_name"/>
+		<result property="custlistMobile" column="custlist_mobile"/>
+		<result property="custlistNickname" column="custlist_nickname"/>
+		<result property="custlistHeadimg" column="custlist_headimg"/>
+		<result property="custlistPassword" column="custlist_password"/>
+		<result property="custlistTime" column="custlist_time"/>
+	</resultMap>
+	<!-- 查询表 -->
+	<select id="queryAll" resultMap="resultMap">
+		select * from t_custlist_info order by custlist_time desc
+	</select>
+	<!-- 条件查询 -->
+	<select id="query" resultMap="resultMap" >
+		select * from t_custlist_info
+		<where>
+			<if test="mobile != null and mobile != ''">
+			<bind name="mobile" value="'%' + mobile + '%'"/>
+				and custlist_mobile like #{mobile}
+			</if>
+			<if test="name != null and name != ''">
+			<bind name="name" value="'%' + name + '%'"/>
+				and custlist_name like #{name}
+			</if>
+			<if test="nickname != null and nickname != ''">
+			<bind name="nickname" value="'%' + nickname + '%'"/>
+				and custlist_nickname like #{nickname}
+			</if>
+		</where>
+	</select>
+	<!-- 分页条件查询 -->
+	<select id="queryAllWithPage" resultMap="resultMap" >
+		select * from t_custlist_info
+		<where>
+			<if test="mobile != null and mobile != ''">
+			<bind name="mobile" value="'%' + mobile + '%'"/>
+				and custlist_mobile like #{mobile}
+			</if>
+			<if test="name != null and name != ''">
+			<bind name="name" value="'%' + name + '%'"/>
+				and custlist_name like #{name}
+			</if>
+			<if test="nickname != null and nickname != ''">
+			<bind name="nickname" value="'%' + nickname + '%'"/>
+				and custlist_nickname like #{nickname}
+			</if>
+		</where>
+	</select>
+	<!--查询用户名和密码是否匹配-->
+	<select id="queryBy" resultMap="resultMap">
+		select * from t_custlist_info where custlist_mobile=#{custlistMobile} and custlist_password=#{custlistPassword}
+	</select>
+	
+	<!-- 查询手机号是否重复 -->
+	<select id="queryByPhone" resultMap="resultMap">
+		select * from t_custlist_info where custlist_mobile = #{custlistMobile}
+	</select>
+	<!--用户注册，添加用户信息 -->
+	<insert id="addCustlistInfo" parameterType="com.creatorblue.mapper.CustlistInfoMapper">
+		insert into t_custlist_info(custlist_mobile,custlist_password,custlist_nickname,custlist_headimg,custlist_name) VALUES(#{custlistMobile},#{custlistPassword},#{custlistNickname},#{custlistHeadimg},#{custlistName});
+	</insert>
+
+
+	<!--通过用户ID查询信息 -->
+	<select id="queryById" parameterType="int" resultMap="resultMap">
+		select * from t_custlist_info where custlist_id = #{custlistId}
+	</select>
+
+	<!-- 删除用户信息 -->
+	<delete id="deletes" parameterType="int">
+		delete from t_custlist_info where custlist_id = #{custlistId}
+	</delete>
+	
+	<!-- 修改用户信息 -->
+	<update id="updateInfo">
+		update t_custlist_info 
+		<set>
+			<if test="custlistName != null and custlistName != '' ">
+				custlist_name = #{custlistName},
+			</if>
+			<if test="custlistMobile != null and custlistMobile != '' ">
+				custlist_mobile = #{custlistMobile},
+			</if>
+			<if test="custlistPassword != null and custlistPassword != '' ">
+				custlist_password = #{custlistPassword},
+			</if>
+			<if test="custlistNickname != null and custlistNickname != '' ">
+				custlist_nickname = #{custlistNickname},
+			</if>
+		</set>
+		<where>
+			custlist_id = #{custlistId}
+		</where>
+	</update>
+	
+</mapper>

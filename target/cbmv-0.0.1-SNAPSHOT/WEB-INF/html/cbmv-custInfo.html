@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title></title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/cbmv_index.css}"/>
+    <link rel="stylesheet" th:href="@{/css/register.css}"/>
+    <link rel="shortcut icon" th:href="@{/img/favicon.ico}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.validate.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+    <script  type="text/javascript" th:src="@{/js/alert.js}"></script>
+    <style>
+        .alert-pormpt{//自定义提示框样式
+        background:rgba(255,0,0,0.8);
+            color:#fff;
+        }
+    </style>
+</head>
+
+<body>
+<!--顶部登录及logo模块 begin-->
+<div class="cbmv-header">
+    <!--登录、注册 begin-->
+    <div class="flex-container">
+        <div class="cbmv-header-left">
+            <span class="glyphicon glyphicon-th-list more-icon"></span>
+            <a href="javascript:void(0)" onclick="getMoreInfo()">更多</a>
+            <span class="glyphicon glyphicon-search search-icon"></span>
+            <a href="javascript:void(0)" onclick="getSearchInfo()">搜索</a>
+        </div>
+        <div class="cbmv-header-right">
+            <a th:utext="${session.userName2}!=null?${session.userName2}:'登录'"
+               th:href="@{/cbmv-login}">登录</a>
+            <a th:utext="${session.userName2}!=null?${session.out1}:'注册'"
+               th:href="@{/register}">注册</a>
+        </div>
+    </div>
+    <!--登录、注册 end-->
+    <!--logo 下拉菜单 begin-->
+    <div>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" onclick="showNav()">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <img th:src="@{/img/logo.png}"/>
+                </div>
+                <div class="fixed-nav-right">
+                    <ul>
+                        <li><a th:href="@{/cbmv-index}">首页</a></li>
+                        <li><a th:href="@{/cbmv-index}">微讲堂</a></li>
+                    </ul>
+                </div>
+                <div class="fixed-nav-helps">
+                    <ul>
+                        <li><a href="#">咨询热线：0738-88667333</a></li>
+                        <li><a href="#">创蓝官网</a></li>
+                        <li><a href="#">站内帮助</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+                <div class="fixed-nav-search">
+                    <input type="text" placeholder="请输入要搜索的内容" class="input-sm"/>
+                    <button class="btn btn-primary btn-sm">搜索</button>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!--logo 下拉菜单 end-->
+</div>
+<!--顶部登录及logo模块 end-->
+
+<!--用户信息 begin-->
+<div class="register container">
+    <form class="form-horizontal" method="post" id="register-form" enctype="multipart/form-data">
+        <div class="register-title">
+            <h3>用户信息</h3>
+            <div style="text-align: center;font-size:16px;">(带<span class="requireds">*</span>为必填项)</div>
+        </div>
+        <div class="form-group" style="display:none">
+            <label for="inputId" class="col-xs-3 control-label">ID<span class="requireds">*</span></label>
+            <div class="col-xs-9">
+                <input type="text" class="form-control" id="inputId" name="custlistId">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputNames" class="col-xs-3 control-label">姓名<span class="requireds">*</span></label>
+            <div class="col-xs-9">
+                <input type="text" class="form-control" id="inputNames" name="custlistName">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPhone" class="col-xs-3 control-label">手机号<span class="requireds">*</span></label>
+            <div class="col-xs-9">
+                <input type="text" class="form-control" id="inputPhone" name="custlistMobile">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword" class="col-xs-3 control-label">密码<span class="requireds">*</span></label>
+            <div class="col-xs-9">
+                <input type="password" class="form-control" id="inputPassword" name="custlistPassword">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputRePassword" class="col-xs-3 control-label">确认密码<span class="requireds">*</span></label>
+            <div class="col-xs-9">
+                <input type="password" class="form-control" id="inputRePassword" name="custlistRePassword">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputName" class="col-xs-3 control-label">昵称<span class="requireds">*</span></label>
+            <div class="col-xs-9">
+                <input type="text" class="form-control" id="inputName" name="custlistNickname">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-xs-3"></label>
+            <div class="col-xs-9">
+                <button type="button" class="btn btn-primary" onclick="changeInfo()">修改</button>
+            </div>
+        </div>
+    </form>
+</div>
+<!--用户信息 end-->
+</body>
+
+</html>
+<script type="text/javascript" th:inline="javascript">
+  //拉取用户信息
+  $(function () {
+    var custlistId = [[${session.id}]];
+    $.post([[@{/Custlist/queryById
+  }]],
+    "custlistId=" + custlistId, function (data) {
+      var datas = JSON.parse(data);
+      $("#inputNames").val(datas.custlistName);
+      $("#inputPhone").val(datas.custlistMobile);
+      $("#inputPassword").val(datas.custlistPassword);
+      $("#inputRePassword").val(datas.custlistPassword);
+      $("#inputName").val(datas.custlistNickname);
+    }
+  )
+  })
+
+  //注销
+  function removesession() {
+    $.post([[@{/Custlist/removesession
+  }]],
+    "", function () {
+      window.location.href = [[@{/cbmv-index}]];
+    })
+  }
+
+  //头部搜索，更多及菜单的显示与隐藏
+  function showNav() {
+    $(".fixed-nav-right").toggle("slow");
+  }
+
+  function getMoreInfo() {
+    $(".fixed-nav-helps").toggle("slow");
+  }
+
+  function getSearchInfo() {
+    $(".fixed-nav-search").toggle("slow");
+  }
+
+  //修改用户信息
+  function changeInfo() {
+    var custlistId = [[${session.id}]];
+    var custlistName = $("#inputNames").val();
+    var custlistMobile = $("#inputPhone").val();
+    var custlistPassword = $("#inputPassword").val();
+    var custlistNickname = $("#inputName").val();
+    var params = "custlistName=" + custlistName + "&custlistMobile=" + custlistMobile + "&custlistPassword=" + custlistPassword + "&custlistNickname=" + custlistNickname + "&custlistId=" + custlistId;
+    if (validateForm().form()) {
+      $.post([[@{/Custlist/updateInfo
+    }]],
+      params, function (data) {
+        if (data == "ok") {
+          warning_prompt("修改成功");
+          window.location.href = [[@{/cbmv-index}]];
+        }else
+          {
+            warning_prompt("修改失败");
+          }
+        }
+      )
+    }
+  }
+
+  //表单验证
+  function validateForm() {
+    return $("#register-form").validate({
+      rules: {
+        custlistMobile: {
+          required: true,
+          digits: true,
+          minlength: 11,
+          maxlength: 11
+        },
+        custlistPassword: {
+          required: true,
+          minlength: 6,
+          maxlength: 15
+        },
+        custlistRePassword: {
+          required: true,
+          equalTo: "#inputPassword"
+        },
+        custlistNickname: {
+          required: true
+        },
+        custlistName: {
+          required: true
+        },
+        userText: {
+          required: true
+        },
+        custlistHeadimgs: {
+          required: true
+        }
+      },
+      messages: {
+        custlistMobile: {
+          required: "<span style='color:red;'>请输入手机号</span>",
+          digits: "<span style='color:red;'>只能输入数字</span>",
+          minlength: $.validator.format("<span style='color:red;'>手机号不能小于11个字符</span>"),
+          maxlength: $.validator.format("<span style='color:red;'>手机号不能多于 11个字符</span>")
+        },
+        custlistPassword: {
+          required: "<span style='color:red;'>请输入密码</span>",
+          minlength: $.validator.format("<span style='color:red;'>密码不能小于6个字符</span>"),
+          maxlength: $.validator.format("<span style='color:red;'>密码不能多于 15个字符</span>")
+        },
+        custlistRePassword: {
+          required: "<span style='color:red;'>请再次输入密码</span>",
+          equalTo: "<span style='color:red;'>两次密码不一致</span>"
+        },
+        custlistNickname: {
+          required: "<span style='color:red;'>昵称不能为空</span>"
+        },
+        custlistName: {
+          required: "<span style='color:red;'>姓名不能为空</span>"
+        },
+        userText: {
+          required: "<span style='color:red;'>请同意用户协议</span>"
+        },
+        custlistHeadimgs: {
+          required: "<span style='color:red;'>请选择头像</span>"
+        }
+      }
+    })
+  }
+</script>

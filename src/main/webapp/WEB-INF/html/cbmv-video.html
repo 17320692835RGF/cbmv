@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+		<link rel="stylesheet" th:href="@{/css/cbmv_index.css}" />
+		<link rel="stylesheet" th:href="@{/css/cbmv-video.css}" />
+		<link rel="shortcut icon" th:href="@{/img/favicon.ico}">
+		<script type="text/javascript" th:src="@{/js/jquery.min.js}" ></script>
+		<script type="text/javascript" th:src="@{/js/bootstrap.min.js}" ></script>
+		<script type="text/javascript" th:src="@{/js/cbmv-video.js}" ></script>
+		<title>视频播放</title>
+	</head>
+<script type="text/javascript" th:inline="javascript">
+	//头部菜单显示，搜索，更多
+	function showNav(){
+		$(".fixed-nav-right").toggle("slow");
+	}
+	function getMoreInfo(){
+		$(".fixed-nav-helps").toggle("slow");
+	}
+	function getSearchInfo() {
+		$(".fixed-nav-search").toggle("slow");
+	}
+	$(".list-inline li").each(function(index){
+		$(this).click(function(){
+			$(".list-inline li").removeClass("actives");
+			$(".list-inline li").eq(index).addClass("actives");
+		})
+	})
+	$(".list-inline span").each(function(index){
+		$(this).click(function(){
+			$(".list-inline span").removeClass("actives");
+			$(".list-inline span").eq(index).addClass("actives");
+		})
+	})
+
+	//清除会话，并跳转到首页
+	function removesession(){
+
+				$.post([[@{/Custlist/removesession}]],"",function(){
+					window.location.href = [[@{/cbmv-index}]];
+				})
+
+			}
+
+	//跳转至用户信息页面
+	function backToinfo(){
+		window.location.href = [[@{/cbmv-custInfo}]];
+	}
+
+	//点赞
+	function addup(e){
+		 var videoId = e.target.id;
+	    $.post([[@{/cbmvVideo/addup}]],"videoId="+videoId,function(data){
+	    	$('.up').text(data);
+	    })
+		}
+	//进入页面播放视频
+	$(function (){
+		var videoId =[[${video.videoId}]];
+	    $.post([[@{/cbmvVideo/ok}]],"videoId="+videoId,function(data){
+	    	if(data >  0){
+	    		$('.glyphicon-thumbs-up').toggleClass('cs')
+	    	}
+	    })
+	    $.post([[@{/cbmvVideo/ok2}]],"videoId="+videoId,function(data){
+	    	if(data >0){
+				$(".glyphicon-heart").toggleClass('cs');
+	    	}
+	    })
+	})
+	var videoId =[[${video.videoId}]];
+	//收藏
+    function addcol(){
+	  $.post([[@{/cbmvVideo/addcol}]],"videoId="+videoId,function(data){
+				$(".col").text(data);
+	  })
+}
+
+
+</script>
+	<body>
+		<div class="">
+			<!--顶部登录及logo模块 begin-->
+			<div class="cbmv-header">
+				<!--登录、注册 begin-->
+				<div class="flex-container">
+					<div class="cbmv-header-left">
+						<span class="glyphicon glyphicon-th-list more-icon"></span>
+						<a href="javascript:void(0)" onclick="getMoreInfo()">更多</a>
+					</div>
+					<div class="cbmv-header-right">
+						<a th:utext="${session.userName1}!=null?${session.userName1}:'登录'"
+						th:href="@{/cbmv-login}">登录</a> <a
+						th:utext="${session.userName1}!=null?${session.out2}:'注册'"
+						th:href="@{/register}">注册</a>
+					</div>
+				</div>
+				<!--登录、注册 end-->
+				<!--logo 下拉菜单 begin-->
+				<div>
+					<nav class="navbar navbar-default" role="navigation">
+						<div class="container-fluid">
+							<div class="navbar-header">
+								<button type="button" class="navbar-toggle" data-toggle="collapse" onclick="showNav()">
+						            <span class="sr-only">切换导航</span>
+						            <span class="icon-bar"></span>
+						            <span class="icon-bar"></span>
+						            <span class="icon-bar"></span>
+       							 </button>
+								<img th:src="@{/img/logo.png}" />
+							</div>
+							<div class="fixed-nav-right">
+								<ul>
+									<li><a th:href="@{/cbmv-index}">首页</a></li>
+									<li><a th:href="@{/login}">后台管理</a></li>
+								</ul>
+							</div>
+							<div class="fixed-nav-helps">
+								<ul>
+									<li><a href="#">咨询热线</a></li>
+									<li><a href="#">官网</a></li>
+								</ul>
+							</div>
+<!--							<div class="fixed-nav-search">-->
+<!--								<input type="text" placeholder="请输入要搜索的内容" class="input-sm"/>-->
+<!--								<button class="btn btn-primary btn-sm">搜索</button>-->
+<!--							</div>-->
+						</div>
+					</nav>
+				</div>
+				<!--logo 下拉菜单 end-->
+			</div>
+			<!--顶部登录及logo模块 end-->
+
+
+		<!--面包屑导航栏-->
+		<div style="margin-top: 80px;">
+		<ul class="breadcrumb">
+			<li>
+				<a th:href="@{/cbmv-index}">首页</a>
+			</li>
+			<li class="active" id="subjectName" th:text="${video.techDirection}">
+			</li>
+			<li class="active" id="subjectName" th:text="${video.videoName}">
+			</li>
+		</ul>
+		</div>
+		<!--/面包屑导航栏-->
+		<div class="container">
+			<!--播放窗口-->
+			<div class="playbox">
+				<div class="videowindow">
+					<video id="" th:src="@{/video/}+${video.videoAddress}" controls="controls" controlslist="nodownload" autoplay="autoplay"></video>
+					<div class="playbar">
+						<div class="pull">
+							<div class="pull-left">
+
+							</div>
+							<div class="pull-right">
+								<!--收藏-->
+								<div class="collect">
+									<span class="glyphicon glyphicon-heart" onclick="addcol()"></span>
+									<span class="col" th:text="${video.collectNum}"></span>
+								</div>
+								&nbsp;&nbsp;
+								<!--点赞-->
+								<div class="praise">
+									<span class="glyphicon glyphicon-thumbs-up" th:id="${video.videoId}" onclick="addup(event)"></span>
+									<span class="up" th:text="${video.fabulousNum}"  ></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<!-- /播放窗口  -->
+
+
+		<!--标签页-->
+			<div class="row">
+				<div class="classTabs col-xs-3">
+			      <span class="classTabs-span" id="s-introduce" onclick="display1()">视频介绍</span>
+			  </div>
+<!--			   <div class="classTabs col-xs-3">-->
+<!--			      <span class="classTabs-cspan" id="s-directory" onclick="display2()">课程目录</span>-->
+<!--			   </div>-->
+			   <div class="classTabs col-xs-2">
+			      <span class="classTabs-cspan" id="s-comments" onclick="display3()">评论</span>
+			   </div>
+			</div>
+		<!--标签页-->
+		<!--内容分页-->
+		<div id="" class="tab-content cb-tabcontent">
+			<!--课程介绍-->
+			<div id="introduce"  class="">
+				<p id=""><b>上传人：</b><br><span th:text="${video.lecturer}"></span></p>
+				<p id="">
+					<b>动物种类：</b><br><span th:text=${video.techDirection}></span>
+				</p>
+				<p id=""><b>视频简介：</b><br></p>
+				<p id="" class="" th:text=${video.videoDescription}>
+				</p>
+			</div>
+
+			<!--评论 -->
+			<div id="comments" style="display: none;" class="">
+				<textarea class="textar" placeholder="欢迎您的意见!"></textarea>
+				<div class="opinion"><button type="button" class="btn btn-primary">发表意见</button></div>
+			</div>
+			<!--评论 -->
+		</div>
+		<!--内容分页-->
+		</div>
+
+
+		<!--底部公司有关信息模块 begin-->
+				<div class="cbmv-footer container">
+					<!--文字信息 begin-->
+					<div class="cbmv-cpinfo">
+						<p>
+							<span class="cbmv-cpinfo-left">幼儿认知教育</span>
+						</p>
+						<p>© 2021 河北工程大学</p>
+						<p>信息与电气工程学院</p>
+						<p>计算机1804创新创业3 &nbsp; 16组 &nbsp;&nbsp; 版权所有</p>
+					</div>
+					<!--文字信息 end-->
+				</div>
+				<!--底部公司有关信息模块 end-->
+
+			</div>
+	</body>
+
+</html>

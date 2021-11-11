@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.creatorblue.mapper.CbmvVideoMapper">
+ 		<resultMap type="com.creatorblue.domain.VideoInfo" id="videoInfo">
+			<id  column="video_id"  property="videoId" />
+			<result column="video_name" property="videoName" />
+			<result column="tech_direction" property="techDirection" />
+			<result column="lecturer" property="lecturer" />
+			<result column="video_num" property="videoNum" />
+			<result column="fabulous_num" property="fabulousNum" />
+			<result column="collect_num" property="collectNum" />
+			<result column="share_num" property="shareNum" />
+			<result column="cover_photo" property="coverPhoto" />
+			<result column="upload_time" property="uploadTime"/>
+			<result column="upLoader" property="upLoader"/>
+			<result column="video_address" property="videoAddress"/>
+			<result column="video_description" property="videoDescription"/>
+		</resultMap>	
+ 	<select id="queryVideos" resultMap="videoInfo">
+ 	 		select video_id ,cover_photo,video_name,video_num  from t_video order by upload_time desc
+ 	</select>
+ 	<!-- 条件查询 -->
+ 	<select id="queryVidesByName"  parameterType="String"  resultMap="videoInfo">
+ 			select video_id ,cover_photo,video_name,video_num  from t_video where tech_direction = #{techDirection}
+ 	</select>
+ 	<!-- id查询 -->
+ 	<select id="video" resultMap="videoInfo" parameterType="String">
+ 			select * from t_video where video_id = #{videoId}
+ 	</select>
+ 	
+ 	<insert id="videoNum" >
+ 			insert into u_user_statistics(statistics_id,staticics,video_id,user_name) values(#{statisticsId},#{staticics},#{videoId},#{userName})
+ 	</insert>
+ 	<!-- 查找播放数 -->
+ 	<select id="selectVideoNum" resultType="int" parameterType="String">
+ 			select count(*) from u_user_statistics where video_id =#{videoId}
+ 	</select>
+ <!-- 更新播放次数 -->
+ 	<update id="updateVideoNum">
+ 			update t_video set video_num =#{videoNum} where video_id = #{videoId}
+ 	</update>
+ 	<!-- 点赞增加 -->
+ 	<insert id="upadd">
+ 				insert into u_user_statistics(statistics_id,staticics,video_id,user_name,phone) values(#{statisticsId},#{staticics},#{videoId},#{userName},#{phone})
+ 	</insert>
+ 	<!-- 判断是否已点赞 -->
+ 	<select id="booleanup" resultType="int">
+ 	select count(*) from u_user_statistics where  phone = #{phone} and video_id = #{videoId} and staticics = 3
+ 	</select>
+ 	<!-- 点了赞删除 -->
+ 	<delete id="delup">
+ 	delete from  u_user_statistics  where phone = #{phone} and video_id = #{videoId} and staticics = 3
+ 	</delete>
+ 	
+ 	<!-- 查询点赞数 -->
+ 	<select id="countup" resultType="int">
+ 	select count(*) from u_user_statistics where video_id = #{videoId} and staticics = 3
+ 	</select>
+ 	
+ 	<!-- 更新点赞数 -->
+ 	<update id="updategood">
+ 	update  t_video set fabulous_num  = #{count} where video_id = #{videoId}
+ 	</update>
+ 	
+ 	
+ 	<!-- 判断数据库有没有 -->
+ 	<select id="booleancol" resultType="int">
+ 	 	select count(*) from u_user_statistics where  phone = #{phone} and video_id = #{videoId} and staticics = 1
+ 	</select>
+ 	
+ <!-- 	增加收藏 -->
+ 	<insert id="coladd">
+ 			insert into u_user_statistics(statistics_id,staticics,video_id,user_name,phone) values(#{statisticsId},#{staticics},#{videoId},#{userName},#{phone})
+ 	</insert>
+
+ 	 <!-- 收藏删除 -->
+ 	<delete id="delcol">
+ 	delete from  u_user_statistics  where phone = #{phone} and video_id = #{videoId} and staticics = 1
+ 	</delete>
+ 	<!-- 收藏数 -->
+ 	 <select id="countcol" resultType="int">
+ 	select count(*) from u_user_statistics where video_id = #{videoId} and staticics = 1
+ 	</select>
+ 	
+ 	 	<!-- 更新点赞数 -->
+ 	<update id="updatecol">
+ 	update  t_video set collect_num  = #{count} where video_id = #{videoId}
+ 	</update>
+ 	
+ </mapper>

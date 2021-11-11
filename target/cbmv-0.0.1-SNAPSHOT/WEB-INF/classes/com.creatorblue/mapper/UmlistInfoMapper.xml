@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.creatorblue.mapper.UmlistInfoMapper">
+	
+	<resultMap type="com.creatorblue.domain.UmlistInfo" id="umlistInfo">
+		<id property="umlistId" column="umlist_id"/>
+		<result property="umlistName" column="umlist_name"/>
+		<result property="umlistPhone" column="umlist_phone"/>
+		<result property="umlistCard" column="umlist_card"/>
+		<result property="umlistPwd" column="umlist_pwd"/>
+	</resultMap>
+	<!-- 管理员登录校验 -->
+	<select id="login" resultMap="umlistInfo">
+		SELECT * FROM t_umlist_info a WHERE a.umlist_pwd = #{password} and a.umlist_phone = #{mobile}
+	</select>
+	<!-- 查询当前管理员信息 -->
+	<select id="queryAdmin" resultMap="umlistInfo">
+		select * from t_umlist_info where umlist_id = #{umlistId}
+	</select>
+	<!-- 修改管理员密码 -->
+	<update id="update">
+		update t_umlist_info a set a.umlist_pwd = #{newpassword} where a.umlist_phone=#{mobile}
+	</update>
+	<!-- 查询所有用户信息 -->
+	<select id="queryAll" resultMap="umlistInfo">
+		select * from t_umlist_info order by umlist_time desc
+	</select>
+	
+	<!-- 根据ID查询单个信息 -->
+	<select id="queryById" parameterType="int" resultMap="umlistInfo">
+		select * from t_umlist_info where umlist_id = #{umlistId}
+	</select>
+	
+	<!-- 通过手机号和姓名查询用户信息 -->
+	<select id="queryByPhoneAndName" resultMap="umlistInfo">
+		select * from t_umlist_info 
+		<where>
+			<if test="umlistPhone != null and umlistPhone != ''">
+				and umlist_phone like concat("%",#{umlistPhone},"%") 
+			</if>
+			<if test="umlistName != null and umlistName != ''">
+				and umlist_name like concat("%",#{umlistName},"%") 
+			</if>
+		</where>
+	</select>
+	
+	<!-- 添加用户信息 -->
+	<insert id="save" parameterType="com.creatorblue.domain.UmlistInfo">
+		insert into t_umlist_info(umlist_name,umlist_phone,umlist_card,umlist_pwd) VALUES(#{umlistName},#{umlistPhone},#{umlistCard},#{umlistPwd})
+	</insert>
+	
+	<!-- 删除用户信息 -->
+	<delete id="del" parameterType="java.lang.Integer">
+		delete from t_umlist_info where umlist_id = #{umlistId}
+	</delete>
+	
+	<!-- 批量删除用户信息 -->
+	<delete id="deleteMany" parameterType="list">
+		delete from t_umlist_info where umlist_id in 
+		<foreach collection="umlistIds" open="(" separator="," close=")" item="umlistIds">
+			#{umlistIds}
+		</foreach>
+	</delete>
+	
+	<!-- 修改用户信息 -->
+	<update id="updateInfo" parameterType="com.creatorblue.domain.UmlistInfo">
+		update t_umlist_info t1 
+		<set>
+			<if test="umlistName != null and umlistName != ''">
+				umlist_name = #{umlistName}, 
+			</if>
+			<if test="umlistPhone != null and umlistPhone != ''">
+				umlist_phone = #{umlistPhone}, 
+			</if>
+			<if test="umlistCard != null and umlistCard != ''">
+				umlist_card = #{umlistCard}, 
+			</if>
+			<if test="umlistPwd != null and umlistPwd != ''">
+				umlist_pwd = #{umlistPwd}, 
+			</if>
+		</set>
+		<where>
+			umlist_id = #{umlistId}
+		</where>
+	</update>
+	
+	<!-- 查询手机号和身份证是否重复 -->
+	<select id="queryByPhoneAndCard" resultMap="umlistInfo">
+		select * from t_umlist_info where (umlist_phone = #{umlistPhone} or umlist_card = #{umlistCard}) and umlist_id != #{umlistId}
+	</select>
+</mapper>

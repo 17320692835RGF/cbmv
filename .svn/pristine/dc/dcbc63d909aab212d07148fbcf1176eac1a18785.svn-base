@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.creatorblue.mapper.AdminInfoMapper">
+	
+	<resultMap type="com.creatorblue.domain.AdminInfo" id="resultMap">
+		<id property="adminId" column="admin_id"/>
+		<result property="adminMobile" column="admin_mobile"/>
+		<result property="adminPassword" column="admin_pwd"/>
+		<result property="adminName" column="admin_name"/>
+	</resultMap>
+	<!-- 记录在线人数 -->
+	<insert id="addCurrUser">
+			insert into u_user_statistics (statistics_id,staticics,user_name) values(#{staticicsId},#{staticics},#{CurrUserName})		
+	</insert>
+	
+	<!-- 一小时在线人数-->
+	<select id="onlieHour" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 HOUR) AND NOW() AND staticics =2
+	</select>
+	<!-- 一小时注册人数 -->
+	<select id="registHour" resultType="java.lang.Integer">
+			SELECT COUNT(*) FROM t_custlist_info WHERE custlist_time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 HOUR) AND NOW() 
+	</select>
+	<!-- 一小时点赞量 -->
+	<select id="goodsHour" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 HOUR) AND NOW() AND staticics =3
+	</select>
+	<!-- 一小时播放量 -->
+	<select id="videotimeHour" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 HOUR) AND NOW() AND staticics =4
+	</select>
+	
+	<!-- 一天在线人数-->
+	<select id="onlieDay" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 DAY) AND NOW() AND staticics =2
+	</select>
+	<!-- 一天注册人数 -->
+	<select id="registDay" resultType="java.lang.Integer">
+			SELECT COUNT(*) FROM t_custlist_info WHERE custlist_time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 DAY) AND NOW() 
+	</select>
+	<!-- 一天点赞量 -->
+	<select id="goodsDay" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 DAY) AND NOW() AND staticics =3
+	</select>
+	<!-- 一天播放量 -->
+	<select id="videotimeDay" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 DAY) AND NOW() AND staticics =4
+	</select>
+	
+	<!-- 一周在线人数-->
+	<select id="onlieWeek" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 WEEK) AND NOW() AND staticics =2
+	</select>
+	<!-- 一周注册人数 -->
+	<select id="registWeek" resultType="java.lang.Integer">
+			SELECT COUNT(*) FROM t_custlist_info WHERE custlist_time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 WEEK) AND NOW() 
+	</select>
+	<!-- 一周点赞量 -->
+	<select id="goodsWeek" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 WEEK) AND NOW() AND staticics =3
+	</select>
+	<!-- 一周播放量 -->
+	<select id="videotimeWeek" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 WEEK) AND NOW() AND staticics =4
+	</select>
+	
+	<!-- 一月在线人数-->
+	<select id="onlieMoney" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 MONTH) AND NOW() AND staticics =2
+	</select>
+	<!-- 一月注册人数 -->
+	<select id="registMoney" resultType="java.lang.Integer">
+			SELECT COUNT(*) FROM t_custlist_info WHERE custlist_time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 MONTH) AND NOW() 
+	</select>
+	<!-- 一月点赞量 -->
+	<select id="goodsMoney" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 MONTH) AND NOW() AND staticics =3
+	</select>
+	<!-- 一月播放量 -->
+	<select id="videotimeMoney" resultType="java.lang.Integer">
+			SELECT COUNT(*) from  u_user_statistics WHERE time BETWEEN DATE_ADD(NOW(),INTERVAL  -1 MONTH) AND NOW() AND staticics =4
+	</select>
+	
+	
+	<!-- 退出登录删除数据 -->
+	<delete id="delOutLogin" parameterType="String">
+	
+			delete from u_user_statistics where statistics_id =#{statisticsId}
+	</delete>
+</mapper>

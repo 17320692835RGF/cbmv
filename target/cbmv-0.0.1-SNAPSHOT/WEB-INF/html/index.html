@@ -1,0 +1,77 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<title>后台管理</title>
+	<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet" type="text/css">
+	<link th:href="@{/css/cbmv.css}" rel="stylesheet" type="text/css">
+	<link th:href="@{/css/index.css}" rel="stylesheet" type="text/css">
+	<link rel="shortcut icon" th:href="@{/img/favicon.ico}">
+	<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/cbmv.js}"></script>
+	<script type="text/javascript" th:src="@{/js/index.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jquery.validate.min.js}" ></script>
+	
+</head>
+<script type="text/javascript" th:inline="javascript">
+		$(function (){
+
+
+		})
+	function outLogin(){
+		window.top.location.href = [[@{/AdminInfo/outLogin}]];
+	}
+
+</script>
+<body>
+	<nav class="navbar navbar-inverse" role="navigation">
+    <div class="container-fluid">
+    <div class="navbar-header">
+        <a class="navbar-brand" th:href="@{/cbmv-index}">幼儿认知教育</a>
+    </div>
+    <div>
+        <ul class="nav navbar-nav main-menu">
+            <li><a href="javascript:void(0)" th:data-url="@{/umlist}">后台用户</a></li>
+            <li><a href="javascript:void(0)" th:data-url="@{/custlist}">客户管理</a></li>
+			<li><a href="javascript:void(0)" th:data-url="@{/subjlist}">种类分类</a></li>
+			<li><a href="javascript:void(0)" th:data-url="@{/videolist}">视频管理</a></li>
+            <li class="dropdown pull-right">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" th:text="${session.currUser}!=null?${session.currUser}:'系统管理员'"  >
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="javascript:void(0)"  th:data-url="@{admininfo}" >用户信息</a></li>
+                    <li><a href="javascript:void(0)"  th:data-url="@{updatepwd}">修改密码</a></li>
+                    <li class="divider"></li>
+                    <li><a href="javascript:void(0)"  th:text="${session.currUser}!=null?注销:'登录'" onclick="outLogin()"></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    </div>
+</nav>
+	<!--主内容区 begin-->
+<div class="container-fluid">
+	<!--面包屑导航 begin-->
+	<ol class="breadcrumb">
+		<li><a href="javascript:void(0)" th:data-url="@{/main}">首页</a></li>
+		<li><a href="#">用户管理</a></li>
+		<li class="active">新增</li>
+	</ol>
+	<!--面包屑导航 end-->
+	<!--功能模块区 begin-->
+	<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				这是一个基本的面板
+			</div>
+		</div>
+	</div>
+	<!--功能模块区 end-->
+</div>
+	<!--主内容区 end-->
+</body>
+</html>

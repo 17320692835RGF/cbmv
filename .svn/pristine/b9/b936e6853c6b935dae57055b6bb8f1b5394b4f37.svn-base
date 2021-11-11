@@ -1,0 +1,138 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" type="text/css" th:href="@{/css/cust.css}"/>
+<script type="text/javascript" th:src="@{/js/cust.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+	var pageSize = 3;
+	//权限控制
+	if([[${msg}]] !=null){
+			alert([[${msg}]])
+				location.href = "login.html";
+		}
+	$(function(){
+			queryAll(1);
+
+	})
+	function querys(total,custlist,pageNum,methods){
+		//渲染分页(总记录数，当前页码，每页多少条记录)
+		$(".pagination").children().remove();
+		if(pageNum == 1){
+			$(".pagination").append('<li><a href="javascript:void(0)">&laquo;</a></li>');
+		}else{
+			$(".pagination").append('<li><a href="javascript:'+methods+'('+(pageNum - 1)+')">&laquo;</a></li>');
+		}
+		for(let i=0; i< parseInt((total+2)/pageSize); i++){
+			if(i == pageNum - 1){
+				$(".pagination").append('<li class="active"><a href="javascript:'+methods+'('+(i+1)+')">'+(i+1)+'</a></li>');
+			}else{
+				$(".pagination").append('<li><a href="javascript:'+methods+'('+(i+1)+')">'+(i+1)+'</a></li>');
+			}
+		}
+		if(pageNum == parseInt((total+2)/pageSize)){
+			$(".pagination").append('<li><a href="javascript:void(0)">&raquo;</a></li>');
+		}else{
+			$(".pagination").append('<li><a href="javascript:'+methods+'('+(pageNum+1)+')">&raquo;</a></li>');
+		}
+		$(".table-bordered tr~tr").remove();
+		for(let i=0; i<custlist.length; i++){
+			var tr = '<tr>'+
+	                	'<td style="display: none">'+custlist[i].custlistId+'</td>'+
+	                	'<td style="display: none">'+custlist[i].custlistPassword+'</td>'+
+	                	'<td style="display: none">'+custlist[i].custlistTime+'</td>'+
+	                	'<td>'+custlist[i].custlistName+'</td>'+
+	                    '<td>'+custlist[i].custlistMobile+'</td>'+
+	                    '<td>'+custlist[i].custlistNickname+'</td>'+
+	                    '<td><span style="background-image: url('+[[@{/userPhoto/}]]+custlist[i].custlistHeadimg+')"></span></td>'+
+	                    '<td class="col-oper"><a href="#" name="delete" onclick="deletes(event)">删除</a></td>' +
+	                '</tr>';
+			$(".table-bordered").append(tr);
+		}
+	}
+	
+	function queryAll(pageNum){
+		let params1 = "pageNum=" + pageNum + "&pageSize=" + pageSize;
+		$.get([[@{/Custlist/queryAll}]],params1,function(data){
+			var data = JSON.parse(data);
+			var custlist = data[0].list;
+			var total = data[0].total;
+			querys(total,custlist,pageNum,"queryAll");
+		})
+	}
+	
+	function query(pageNum){
+		//json
+		let mobile = $("#mobile").val();
+		let name = $("#name").val();
+		let nickname = $("#nickname").val();
+		let params1 = "mobile=" + mobile + "&name=" + name + "&nickname=" + nickname + "&pageSize=" + pageSize + "&pageNum=" + pageNum;
+		$.get([[@{/Custlist/query}]],params1,function(data){
+			var data = JSON.parse(data);
+			var custlist = data[0].list;
+			var total = data[0].total;
+			querys(total,custlist,pageNum,"query");
+			})
+		}
+	//删除
+	function deletes(e){
+		let custlistId = $(e.target).parent().parent().children("td:first").text();
+		if (confirm("确定要删除吗？")) {
+			$(e.target).parent().parent().remove();
+			$.post([[@{/Custlist/deletes}]],"custlistId=" + custlistId,function(data){})
+			alert("删除成功！");
+			queryAll(1);
+		} else {
+			
+		}
+	}
+</script>
+<!--查询区begin-->
+<div class="panel panel-default cb-query">
+    <div class="panel-body">
+        <form class="form-horizontal" role="form">
+    		<div class="form-group form-group-sm">
+				<label for="name" class="col-sm-1 control-label">手机号</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" id="mobile" 
+				   placeholder="请输入手机号">
+				 </div>
+				<label for="name" class="col-sm-1 control-label">姓名</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" id="name" 
+				   placeholder="请输入姓名">
+				 </div> 
+				 <label for="name" class="col-sm-1 control-label">昵称</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" id="nickname" 
+				   placeholder="请输入昵称">
+				 </div> 
+			</div>
+		</form>
+    </div>  
+</div>
+<!--查询区 end-->
+<!--按钮 begin-->
+<div class="panel panel-default cb-opers">
+	    <div class="panel-body">
+	        <button type="button" class="btn btn-info  btn-sm" onclick="query(1)">查询</button>
+	    </div>
+</div>
+<!--按钮 end-->
+<div class="cb-data-list">
+
+	<table class="table table-bordered">
+	    <tr>
+	      <th style="display: none">主键id</th>
+	      <th style="display: none">密码</th>
+	      <th style="display: none">时间</th>
+	      <th>姓名</th>
+	      <th>手机号</th>
+	      <th>昵称</th>
+	      <th>头像</th>
+	      <th>操作</th>
+	    </tr>
+	</table>
+	
+	<ul class="pagination pagination-sm pull-right">
+	</ul>
+</div>
+</html>

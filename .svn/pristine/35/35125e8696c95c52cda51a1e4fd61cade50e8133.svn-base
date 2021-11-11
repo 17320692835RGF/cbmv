@@ -1,0 +1,61 @@
+body{
+	background-color: #f8f8fb;
+}
+.playbox{
+	border: #E2E2E2 solid 1px;
+	height: auto;
+}
+.videowindow video{
+	width: 100%;
+}
+.playbar{
+	line-height: 26px;
+	padding: 0 10px;
+}
+.pull{
+	width: 100%;
+	height: 25px;
+}
+.pull-right div{
+	display: inline-block;
+    cursor: pointer;
+}
+.row{
+	margin-top: 15px;
+}
+.classTabs-span{
+	ext-decoration: none;
+	display: block;
+	width: 100%;
+	margin-bottom: 20px;
+	margin-top: 20px;
+    font-size: 15px;
+    border-bottom: #158aeb solid 2px;
+    color: #158aeb;
+}
+.classTabs-cspan{
+	ext-decoration: none;
+	display: block;
+	width: 100%;
+	margin-bottom: 20px;
+	margin-top: 20px;
+    font-size: 15px;
+}
+.classTabs{
+	width: 30%;
+}
+.textar{
+	background-color: white;
+	width: 100%;
+	height: 300px;
+	color:#bababc ;
+	font-size: 15px;
+}
+.opinion{
+	text-align: center;
+	margin-bottom: 20px;
+	margin-top: 20px;
+}
+.cs {
+	color: #f00;
+}

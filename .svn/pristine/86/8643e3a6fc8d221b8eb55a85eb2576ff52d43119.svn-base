@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" type="text/css" th:href="@{/css/subj.css}"/>
+<link th:href="@{/css/register.css}" rel="stylesheet" type="text/css">
+<script type="text/javascript" th:src="@{/js/subj.js}"></script>
+
+<!--查询区begin-->
+<div class="panel panel-default cb-query">
+    <div class="panel-body">
+        <form class="form-horizontal" role="form">
+    		<div class="form-group form-group-sm">
+				<label for="name" class="col-sm-1 control-label">技术名称</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" id="name" name="subjname" 
+				   placeholder="请输入技术名称">
+				 </div>
+			</div>
+		</form>
+    </div>  
+</div>
+<!--查询区 end-->
+<!--按钮 begin-->
+<div class="panel panel-default cb-opers">
+	    <div class="panel-body">
+	        <button type="button" class="btn btn-info  btn-sm" name="queryname" onclick="querybyname(1)">查询</button>
+	        <button type="button" class="btn btn-info  btn-sm" data-toggle="modal" data-target="#mainmodel1" onclick="addinfo()">新增</button>
+	        <button type="button" class="btn btn-info  btn-sm" name="deleteids" onclick="deletebyids(event)">删除</button>
+	    </div>
+</div>
+<!-- 增加模态框 begin -->
+<div class="modal fade" id="mainmodel1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="exampleModalLabel">添加技术信息</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" method="post" id="formsInfo1" name="formsInfo1">
+							<div class="form-group" style="display: none;">
+								<label for="num" class="col-sm-2 control-label">技术ID<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="subjlistId" placeholder="请输入编号" name="subjlistId">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="num" class="col-sm-2 control-label">技术编号<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="subjlistNum" placeholder="请输入编号" name="subjlistNum">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="name" class="col-sm-2 control-label">技术名称<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="subjlistName" placeholder="请输入名称" name="subjlistName">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="des" class="col-sm-2 control-label">技术描述<span class="requireds">*</span></label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="subjlistDes" placeholder="请输入描述" name="subjlistDes">
+								</div>
+							</div>
+
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal" id="close">关闭</button>
+						<button type="button" class="btn btn-primary" id="add" onclick=addVerification()>保存</button>
+					</div>
+				</div>
+			</div>
+		</div>
+<!-- 增加模态框 end -->
+<!--按钮 end-->
+<div class="cb-data-list">
+
+	<table class="table table-bordered">
+	    <tr>
+	      <th><input type="checkbox" name="selectall" id="all" value="" onclick="checkAll(event)"/></th>
+	      <th>技术编号</th>
+	      <th>技术名称</th>
+	      <th>技术描述</th>
+	      <th>操作</th>
+	    </tr>
+	  <tbody>
+	   
+	  </tbody>
+	</table>
+	
+	<ul class="pagination pagination-sm pull-right">
+	</ul>
+</div>
+<script type="text/javascript"  th:inline="javascript">
+	//权限控制
+	if([[${msg}]] !=null){
+			alert([[${msg}]])
+			location.href = "login.html"
+		}
+	$(function(){
+		queryAll(1);
+
+	})
+	function addinfo(){
+		$("#formsInfo1")[0].reset();
+		$("#exampleModalLabel").html("新增技术信息");
+	}
+	
+	
+	//查询所有
+	function queryAll(pageNum,pageSize){
+		var pageSize = 3;
+		var valu = "pageNum=" + pageNum + "&pageSize=" + pageSize;
+		$.get([[@{/Subjlist/queryAll}]],valu,function(data){
+			var arr = JSON.parse(data);
+			var datas = arr[0].list;
+			var total = arr[0].total;
+			$(".pagination").children().remove();	
+			if(pageNum == 1){
+				$(".pagination").append(' <li><a href="javascript:void(0)">&laquo;</a>');
+			}else{
+				$(".pagination").append(' <li><a href="javascript:queryAll('+(pageNum - 1)+')">&laquo;</a>');
+			}	
+			for(let i = 0 ; i < parseInt((total + pageSize-1)/pageSize); i++){
+				if(i == pageNum -1){
+					$(".pagination").append('<li class="active"><a href="javascript:queryAll('+(i + 1)+')">'+(i + 1)+'</a>')	
+				}else{
+					$(".pagination").append('<li><a href="javascript:queryAll('+(i + 1)+')">'+(i + 1)+'</a>')	
+				}			
+			}
+			if(pageNum == parseInt((total +pageSize-1 )/pageSize)){
+				$(".pagination").append(' <li><a href="javascript:void(0)">&raquo;</a>');
+			}else{
+				$(".pagination").append(' <li><a href="javascript:queryAll('+(pageNum + 1)+')">&raquo;</a>');
+			}
+			$(".table-bordered tr~tr").remove();
+			for(let i = 0 ; i < datas.length; i++ ){
+				$(".table-bordered").append('<tr>' +
+						'<td class="col-check"><input type="checkbox" name="selectone" ' +
+							'value="'+datas[i].subjlistId+'" /></td>' +
+						'<td>'+ datas[i].subjlistNum +'</td>' +
+						'<td>'+ datas[i].subjlistName +'</td>' +
+						'<td>'+ datas[i].subjlistDes +'</td>' +
+						'<td class="col-oper"><a href="#" name="changeInfo" onclick="updata(event)">修改</a><a href="#"  name="delInfo" >删除</a></td>' +
+					'</tr>');
+			}
+			
+			//全选取消
+			$("input[name=selectone]").click(function(){
+				checkSinger();
+			})
+			function checkSinger() {
+				var flag = true;
+				for(let i = 0; i < $("input[name=selectone]").length; i++) {
+					if(!$("input[name=selectone]").eq(i).is(":checked")){
+						flag = false;
+			            break;
+					}
+				}
+				$("input[name=selectall]").prop("checked", flag);
+			}
+			
+			//单列删除
+			$("a[name=delInfo]").bind("click",function(e){
+				//获取复选框value属性值，将subjlistId值付给复选框
+				let id = $(e.target).parent().parent().children("td:first").children("input").val();
+					if(confirm('确定删除吗？')){
+						$(e.target).parent().parent().remove();
+						alert("已删除");
+						$.post([[@{/Subjlist/delete}]],"id="+id,function(data){
+							queryAll(1);
+						})
+					}else{
+						alert("已取消");
+					}
+			})
+		})
+	}
+	
+	
+	//修改			
+	function updata(e){
+			var id = $(e.target).parent().parent().children("td:first").children("input").val();
+			$.post([[@{/Subjlist/querybyid}]],"id="+id,function(data){
+				$('#mainmodel1').modal('show');
+				var data = JSON.parse(data);
+				$("input[name=subjlistId]").val(data.subjlistId);
+				$("input[name=subjlistNum]").val(data.subjlistNum);
+				$("input[name=subjlistName]").val(data.subjlistName);
+				$("input[name=subjlistDes]").val(data.subjlistDes);
+				$("#exampleModalLabel").html("修改技术信息");
+			})		
+	}
+	
+	//批量删除
+	function deletebyids() {
+		var delFlag = confirm("是否确认删除？");
+		var ids = "";
+		var n = 0;
+		if(delFlag == true){
+			for(let i = 0; i < $("input[name=selectone]").length; i++){
+				if($("input[name=selectone]").eq(i).is(":checked")){
+					var id = $("input[name=selectone]").eq(i).val();
+					if(n == 0){
+						ids += "ids=" + id; 
+					}else {
+						ids += "&ids=" + id; 
+					}
+					n++;
+					}
+			}
+			if(ids == ""){
+				alert("请选中行!");
+				return;
+			}
+			$.post([[@{/Subjlist/deleteByIds}]],ids,function(data){
+				console.log(data);
+				if(data == "ok"){
+					alert("删除成功！");
+					queryAll(1);
+					$("input[name=selectall]").prop("checked", false);
+				}
+			});
+			queryAll(1);
+			return true;
+		}else {
+			return false;
+		}	
+  	}
+	
+	
+	
+	//模态框保存按钮
+	function save(){
+		if(validateSubjInfo().form()){
+		$.post([[@{/Subjlist/addorupdata}]],$("#formsInfo1").serialize(),function(data){
+			$('#mainmodel1').modal('hide');	
+			if(data == "ok"){
+				alert("保存成功！")
+				queryAll(1);
+			}else {
+				alert("保存失败！")
+			}	
+		})
+		}else{}
+	}
+	
+	//条件查询,按技术名称查询
+	function querybyname(pageNum,pageSize){
+		var pageSize = 3;
+		let subjname = $("input[name=subjname]").val();
+		var valu = "pageNum=" + pageNum + "&pageSize=" + pageSize + "&name=" +subjname;
+		$.get([[@{/Subjlist/querybyname}]],valu,function(data){
+			var arr = JSON.parse(data);
+			var datas = arr[0].list;
+			var total = arr[0].total;
+			$(".pagination").children().remove();	
+			if(pageNum == 1){
+				$(".pagination").append(' <li><a href="javascript:void(0)">&laquo;</a>');
+			}else{
+				$(".pagination").append(' <li><a href="javascript:querybyname('+(pageNum - 1)+')">&laquo;</a>');
+			}	
+			for(let i = 0 ; i < parseInt((total + pageSize-1)/pageSize); i++){
+				if(i == pageNum -1){
+					$(".pagination").append('<li class="active"><a href="javascript:querybyname('+(i + 1)+')">'+(i + 1)+'</a>')	
+				}else{
+					$(".pagination").append('<li><a href="javascript:querybyname('+(i + 1)+')">'+(i + 1)+'</a>')	
+				}			
+			}
+			if(pageNum == parseInt((total +pageSize-1 )/pageSize)){
+				$(".pagination").append(' <li><a href="javascript:void(0)">&raquo;</a>');
+			}else{
+				$(".pagination").append(' <li><a href="javascript:querybyname('+(pageNum + 1)+')">&raquo;</a>');
+			}
+			$(".table-bordered tr~tr").remove();
+			for(let i = 0 ; i < datas.length; i++ ){
+				$(".table-bordered").append('<tr>' +
+						'<td class="col-check"><input type="checkbox" name="subjlistId" ' +
+							'value="'+datas[i].subjlistId+'" /></td>' +
+						'<td>'+ datas[i].subjlistNum +'</td>' +
+						'<td>'+ datas[i].subjlistName +'</td>' +
+						'<td>'+ datas[i].subjlistDes +'</td>' +
+						'<td class="col-oper"><a href="#" name="changeInfo">修改</a><a href="#"  name="delInfo">删除</a></td>' +
+					'</tr>');
+			}
+		//单列删除
+		$("a[name=delInfo]").bind("click",function(e){
+			//获取复选框value属性值，将subjlistId值付给复选框
+			let id = $(e.target).parent().parent().children("td:first").children("input").val();
+				if(confirm('确定删除吗？')){
+					$(e.target).parent().parent().remove();
+					$.post([[@{/Subjlist/delete}]],"id="+id,function(data){
+						queryAll(1);
+					})
+					alert("已删除");
+				}else{
+					alert("已取消");
+				}
+		})
+		})
+	}
+	
+	//输入验证
+	function validateSubjInfo() {
+		return $("#formsInfo1").validate({
+			rules: {
+				subjlistNum: {
+					required: true
+				},
+				subjlistName: {
+					required: true
+				},
+				subjlistDes: {
+					required: true
+				}
+			},
+			messages: {
+				subjlistNum: {
+					required: "<span style='color:red;'>请输入技术编号</span>"
+				},
+				subjlistName: {
+					required: "<span style='color:red;'>请输入技术名称</span>"	
+				},
+				subjlistDes: {
+					required: "<span style='color:red;'>请输入技术描述</span>"	
+				}
+			}
+				
+		})
+	}
+	
+	//添加验证
+	function addVerification(){
+		let subjlistNum = $("#subjlistNum").val();
+		let subjlistId = $("#subjlistId").val();
+		console.log(subjlistId);
+		$.post([[@{/Subjlist/querybynum}]],"subjlistNum="+subjlistNum+"&subjlistId="+subjlistId,function(datc){
+			var arrr = JSON.parse(datc);
+			if(arrr.length != 0){
+					alert("抱歉,技术编号已存在");
+			}else{
+				save();
+			}
+		})
+	}
+	
+	
+</script>
+</html>

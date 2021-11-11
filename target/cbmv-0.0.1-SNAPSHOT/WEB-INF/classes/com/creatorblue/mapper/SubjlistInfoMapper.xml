@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.creatorblue.mapper.SubjlistInfoMapper">
+	
+	<resultMap type="com.creatorblue.domain.SubjlistInfo" id="resultMap">
+		<id property="subjlistId" column="subjlist_id"/>
+		<result property="subjlistNum" column="subjlist_num"/>
+		<result property="subjlistName" column="subjlist_name"/>
+		<result property="subjlistDes" column="subjlist_des"/>
+	</resultMap>
+	
+	<!-- 查询表 -->
+	<select id="queryAll" resultMap="resultMap">
+		select * from t_subjlist ORDER BY subjlsit_time DESC
+	</select>
+	
+	<!-- 条件查询 -->
+	<select id="querybyname" resultMap="resultMap" parameterType="string" >
+		select * from t_subjlist
+		<where>
+			<if test="name != null and name != ''">
+				and subjlist_name like concat('%', #{name}, '%')
+			</if>
+		</where>
+	</select>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="integer"> 
+		delete from t_subjlist where subjlist_id=#{id}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.creatorblue.domain.SubjlistInfo">
+		update t_subjlist 
+		set subjlist_num=#{subjlistNum},subjlist_name=#{subjlistName},subjlist_des=#{subjlistDes} 
+		where subjlist_id=#{subjlistId}	
+	</update>
+	
+	<!-- 增加 -->
+	<insert id="add" parameterType="com.creatorblue.domain.SubjlistInfo">
+		insert into t_subjlist(subjlist_num,subjlist_name,subjlist_des) 
+		values(#{subjlistNum},#{subjlistName},#{subjlistDes})
+	</insert>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteByIds" parameterType="list">
+		delete from t_subjlist where subjlist_id in
+		<foreach collection="ids" item="ids" open="(" separator="," close=")">
+			#{ids}
+		</foreach>
+	</delete>
+	
+	<!-- 条件查询，按技术ID查询 -->
+	<select id="querybyid" resultMap="resultMap" parameterType="integer">
+		select * from t_subjlist where subjlist_id=#{id}
+	</select>
+	
+	<!-- 条件查询，按技术编号查询 -->
+	<select id="querybynum" resultMap="resultMap">
+		select * from t_subjlist where subjlist_num=#{subjlsitNum} and subjlist_id !=#{subjlsitId};
+	</select>
+</mapper>
